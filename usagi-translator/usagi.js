@@ -99,44 +99,56 @@ function match(table, text, pos) {
   return null;
 }
 
-// 우사기어 → 한국어 (암호). 우사기어가 아닌 글자는 그대로 두고 그 수를 함께 돌려줍니다.
-const TOKLIKE = /[\p{L}\p{N}!]/u;
-export function decode(input) {
-  // 소리와 소리 사이의 공백은 읽기용이라 지우고, 문장 부호 옆이나 글 처음·끝의 공백은 남깁니다.
-  const text = input.replace(/ +/g, (m, pos, str) => {
-    const before = pos > 0 && TOKLIKE.test(str[pos - 1]);
-    const after = pos + m.length < str.length && TOKLIKE.test(str[pos + m.length]);
-    return before && after ? '' : m;
-  });
+// 우사기어 → 한국어 (암호). 우사기어가 아닌 글자는 그대로 두고, 푼 글자 수(matched)와 못 푼 글자 수(unknown)를 함께 돌려줍니다.
+export function decode(text) {
   let out = '';
   let unknown = 0;
+  let unknownUsagi = 0; // 못 푼 글자 중 한글·가나 (암호가 아니라 회화 말일 가능성)
+  let matched = 0;
+  let lastWasToken = false; // 바로 앞에 암호 소리가 있었는지 (소리 사이의 공백은 읽기용이라 지웁니다)
   let i = 0;
   while (i < text.length) {
     const ch = text[i];
-    if (ch === SPACE) { out += ' '; i++; continue; }
-    if (ch === BANG) { out += '!'; i++; continue; }
-    const esc = match(T.esc, text, i);
-    if (esc) {
-      const r = readEscape(text, i + esc[0]);
-      if (r) { out += String.fromCharCode(r.unit); i = r.next; continue; }
-    } else {
-      const cho = match(T.cho, text, i);
-      if (cho) {
-        const jung = match(T.jung, text, i + cho[0]);
-        if (jung) {
-          const jong = match(T.jong, text, i + cho[0] + jung[0]);
-          out += String.fromCharCode(0xac00 + cho[1] * 588 + jung[1] * 28 + (jong ? jong[1] : 0));
-          i += cho[0] + jung[0] + (jong ? jong[0] : 0);
-          continue;
-        }
-      }
+    if (ch === ' ') {
+      let j = i;
+      while (text[j] === ' ') j++;
+      if (!(lastWasToken && startsToken(text, j))) out += text.slice(i, j);
+      i = j;
+      continue;
     }
-    if (LETTER.test(ch)) unknown++;
+    if (ch === SPACE) { out += ' '; i++; lastWasToken = true; continue; }
+    if (ch === BANG) { out += '!'; i++; lastWasToken = false; continue; }
+    const r = readSyllable(text, i);
+    if (r) { out += r.text; i = r.next; matched++; lastWasToken = true; continue; }
+    if (LETTER.test(ch)) { unknown++; if (/[가-힣\u3041-\u30ff]/.test(ch)) unknownUsagi++; }
     out += ch;
     i++;
+    lastWasToken = false;
   }
-  return { text: out, unknown };
+  return { text: out, unknown, unknownUsagi, matched };
 }
+
+// 이 자리에서 암호 소리 한 글자(한글 한 음절 또는 「뿌」 글자)를 읽습니다.
+function readSyllable(text, i) {
+  const esc = match(T.esc, text, i);
+  if (esc) {
+    const r = readEscape(text, i + esc[0]);
+    return r ? { text: String.fromCharCode(r.unit), next: r.next } : null;
+  }
+  // 초성·중성·받침 소리 사이의 공백은 읽기용이라 건너뜁니다
+  const cho = match(T.cho, text, i);
+  if (!cho) return null;
+  const j = skipSpaces(text, i + cho[0]);
+  const jung = match(T.jung, text, j);
+  if (!jung) return null;
+  let next = j + jung[0];
+  const k = skipSpaces(text, next);
+  const jong = match(T.jong, text, k);
+  if (jong) next = k + jong[0];
+  return { text: String.fromCharCode(0xac00 + cho[1] * 588 + jung[1] * 28 + (jong ? jong[1] : 0)), next };
+}
+function skipSpaces(text, i) { while (text[i] === ' ') i++; return i; }
+const startsToken = (text, i) => text[i] === SPACE || readSyllable(text, i) !== null;
 
 function readEscape(text, pos) {
   let i = pos;
