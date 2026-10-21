@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>해외 직구 계산기</title>
+<meta name="description" content="국내 구매와 해외 직구(리테일 + 배송대행) 총비용을 환율, 배송비, 면세 한도, 관세, 부가세, 카드 수수료까지 넣어 비교하는 계산기">
+<meta name="theme-color" content="#28499a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="직구 계산기">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-82CM8WMWCW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-82CM8WMWCW');
+</script>
+</head>
+<body>
+<title>해외 직구 계산기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" crossorigin="anonymous">
+<style>
+/* Layout: one column (header, rates, cart, shipping/customs/payment in two sub-columns, result); a slim fixed bar at the bottom repeats the verdict while the result card is off-screen */
+:root{
+  --bg:#eceef2; --surface:#ffffff; --surface-2:#f4f5f8; --fg:#1b2130; --fg-muted:#5b6478; --line:#d3d8e2;
+  --accent:#28499a; --accent-fg:#ffffff; --accent-soft:#e2e8f7;
+  --good:#1e7a4c; --good-bg:#e1f3e9; --bad:#b4372b; --bad-bg:#f9e4e0; --warn:#a86f12; --warn-bg:#fbefd6;
+  --font-display:'Black Han Sans','IBM Plex Sans KR',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans KR','Noto Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;
+  --radius:10px; --ctl:36px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14171d; --surface:#1d2129; --surface-2:#262b35; --fg:#e7eaf0; --fg-muted:#9ba4b6; --line:#343b49;
+    --accent:#86a4f2; --accent-fg:#0f1524; --accent-soft:#23304f;
+    --good:#62d094; --good-bg:#17331f; --bad:#f29383; --bad-bg:#3b1f1a; --warn:#e8b45e; --warn-bg:#3a2d12;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14171d; --surface:#1d2129; --surface-2:#262b35; --fg:#e7eaf0; --fg-muted:#9ba4b6; --line:#343b49;
+  --accent:#86a4f2; --accent-fg:#0f1524; --accent-soft:#23304f;
+  --good:#62d094; --good-bg:#17331f; --bad:#f29383; --bad-bg:#3b1f1a; --warn:#e8b45e; --warn-bg:#3a2d12;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5;margin:0;
+  padding-block:24px calc(96px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.page{max-width:880px;margin:0 auto;display:grid;gap:20px;min-width:0}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(30px,4.5vw,42px);letter-spacing:.01em;margin:0;line-height:1.1;text-wrap:balance}
+h2{font-size:17px;font-weight:600;margin:0}
+h3{font-size:12.5px;font-weight:600;margin:0;color:var(--fg-muted);letter-spacing:.04em}
+.warn{margin:10px 0 0;color:var(--bad);font-size:13.5px;font-weight:500;line-height:1.55}
+.sub{margin:8px 0 0;color:var(--fg-muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;display:grid;gap:14px;min-width:0}
+.card-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.rates{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:end}
+.rates .field input,.rates .field select{width:150px}
+.check{display:flex;align-items:center;gap:6px;font-size:14px;height:var(--ctl);cursor:pointer;user-select:none}
+.field{display:grid;gap:4px;min-width:0}
+.field>label,.field>.lbl{font-size:12px;color:var(--fg-muted);font-weight:500;letter-spacing:.02em}
+input[type=number],input[type=text],select{font:inherit;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;height:var(--ctl);padding:0 9px;min-width:0;width:100%}
+select{-webkit-appearance:none;appearance:none;padding-right:32px;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238a93a6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;background-size:12px 8px}
+textarea{font:inherit;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;min-width:0}
+input[type=number][readonly]{color:var(--fg-muted);background:transparent;border-style:dashed}
+input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--accent)}
+input:focus-visible,select:focus-visible,button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:inherit;font-weight:500;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);padding:0 12px;height:var(--ctl)}
+button:hover{border-color:var(--fg-muted)}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button.ghost{background:transparent}
+button.icon{padding:0 8px;font-size:12px;height:28px}
+/* cart items: one block per item, fields wrap instead of scrolling sideways */
+.items{display:grid;gap:10px}
+.item{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2)}
+.item input[type=text],.item input[type=number]{background:var(--surface);padding:0 8px}
+.item .f-name{flex:1 1 150px}
+.item .f-money{flex:0 0 108px}
+.item .f-small{flex:0 0 62px}
+.item .f-check .box{height:var(--ctl);display:flex;align-items:center;justify-content:center}
+.item .f-diff{flex:0 0 auto;min-width:92px;text-align:right;margin-left:auto}
+.item .f-diff .num{font-weight:600;height:var(--ctl);display:flex;align-items:center;justify-content:flex-end;white-space:nowrap}
+.item .del{height:var(--ctl);flex:0 0 auto}
+.empty{color:var(--fg-muted);padding:10px 0}
+/* shipping / customs / payment: settings in order on the left, rate table on the right */
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 0;align-items:start}
+.two-col .stack:first-child{padding-right:28px}
+.two-col .stack+.stack{border-left:1px solid var(--line);padding-left:28px}
+@media (max-width:720px){.two-col{grid-template-columns:1fr}.two-col .stack:first-child{padding-right:0}.two-col .stack+.stack{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:16px}}
+.stack{display:grid;gap:12px;align-content:start;min-width:0}
+.inline{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:6px}
+.table-wrap{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-weight:500;font-size:12px;color:var(--fg-muted);padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.num,th.num{text-align:right;white-space:nowrap}
+#ship-table td:first-child,#ship-table td:nth-child(2){width:45%}
+#ship-table input{height:32px}
+.row-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--fg-muted)}.small{font-size:12.5px}
+.note{font-size:12.5px;color:var(--fg-muted);margin:0;line-height:1.5}
+.pos{color:var(--good)}.neg{color:var(--bad)}.warn-text{color:var(--warn)}
+/* result */
+.verdict{border-radius:8px;padding:16px 18px;display:grid;gap:4px;border:1px solid var(--line);background:var(--surface-2)}
+.verdict.good{background:var(--good-bg);border-color:transparent}
+.verdict.domestic{background:var(--accent-soft);border-color:transparent}
+.v-label{font-size:12.5px;font-weight:600;letter-spacing:.05em}
+.verdict.good .v-label,.verdict.good .v-amount{color:var(--good)}
+.verdict.domestic .v-label,.verdict.domestic .v-amount{color:var(--accent)}
+.v-amount{font-family:var(--font-display);font-size:clamp(34px,5vw,46px);line-height:1.05;font-weight:400}
+.v-sub{font-size:13px;color:var(--fg-muted)}
+.gauge{display:grid;gap:6px}
+.gauge-text{font-size:13px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gauge-track{height:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.gauge-bar{height:100%;background:var(--good);width:0;transition:width .3s}
+.gauge.near .gauge-bar{background:var(--warn)}.gauge.over .gauge-bar{background:var(--bad)}
+.gauge.ok strong{color:var(--good)}.gauge.near strong{color:var(--warn)}.gauge.over strong{color:var(--bad)}
+.breakdown td:first-child{color:var(--fg-muted)}
+.breakdown td .sub{font-size:12px;color:var(--fg-muted);margin:0;max-width:none}
+.breakdown tr.total td{font-weight:600;color:var(--fg);border-top:2px solid var(--line);border-bottom:0}
+.breakdown tr.total.pos td.num{color:var(--good)}.breakdown tr.total.neg td.num{color:var(--bad)}
+.warn-box{background:var(--warn-bg);color:var(--fg);border-radius:6px;padding:8px 10px;font-size:13px}
+.split{display:grid;gap:4px;border-top:1px solid var(--line);padding-top:12px}
+.split:empty{display:none}
+.split-lead{margin:0;font-size:14px}
+.split ol{margin:4px 0 0;padding-left:20px;font-size:13px;display:grid;gap:6px}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;letter-spacing:.03em;vertical-align:middle}
+.pill.ok{background:var(--good-bg);color:var(--good)}.pill.tax{background:var(--bad-bg);color:var(--bad)}
+details{border-top:1px solid var(--line);padding-top:10px}
+details.plain{border-top:0;padding-top:0}
+summary{cursor:pointer;font-weight:500;font-size:14px}
+details ul{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--fg-muted);display:grid;gap:6px}
+details a{color:var(--accent)}
+textarea{min-height:100px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;margin-top:8px}
+/* fixed verdict bar, shown only while the result card is off-screen */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--surface);border-top:1px solid var(--line);
+  padding:8px max(16px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar-in{max-width:880px;margin:0 auto;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.bar-main{display:grid;gap:2px;min-width:0}
+.bar-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bar button{flex:0 0 auto}
+.bar-label{font-size:13px;font-weight:600}
+.bar-amt{font-family:var(--font-display);font-size:24px;line-height:1}
+.bar.good .bar-label,.bar.good .bar-amt{color:var(--good)}
+.bar.domestic .bar-label,.bar.domestic .bar-amt{color:var(--accent)}
+.bar-gauge{font-size:12.5px;color:var(--fg-muted)}
+.bar button{height:32px}
+.foot{display:grid;gap:12px;padding:4px 4px 0}
+.foot-links{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.donate{display:inline-flex;align-items:center;height:var(--ctl);padding:0 16px;border-radius:6px;background:var(--accent);color:var(--accent-fg);font-weight:600;text-decoration:none}
+.donate:hover{filter:brightness(1.08)}
+.foot-links a:not(.donate){color:var(--accent);font-size:13.5px}
+@media (max-width:600px){
+  .card{padding:14px}
+  input[type=number],input[type=text],select,textarea{font-size:16px}
+  .rates{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;align-items:end}
+  .rates .field input,.rates .field select{width:100%}
+  .rates .field:first-child,.rates #rate-status{grid-column:1/-1}
+  .rates .check{justify-content:center}
+  .rates #rate-usd-wrap label .muted{display:none}
+  .item{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px 10px;padding:10px}
+  .item .f-name{grid-column:span 6}
+  .item .f-money{grid-column:span 3}
+  .item .f-small,.item .f-check{grid-column:span 2}
+  .item .f-diff{grid-column:span 4;margin-left:0}
+  .item .del{grid-column:span 2;width:100%}
+  .inline{grid-template-columns:1fr}
+  .bar-amt{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){.gauge-bar{transition:none}}
+</style>
+
+<div class="page">
+<header>
+  <h1>해외 직구 계산기</h1>
+  <p class="warn">이 계산기는 직구 비용을 가늠해 보기 위한 참고용입니다. 실제 관세와 부가세는 통관 시 세관의 판단과 당일 과세환율에 따라 달라질 수 있으며, 계산 결과와 실제로 부과되는 세금의 차이에 대해 제작자는 책임지지 않습니다.</p>
+  <p class="sub">국내 구매와 해외 리테일 + 배송대행 구매를 비교합니다. 목록통관이 가능한 자가사용 물품 기준입니다.<br>세금은 한 번에 통관되는 묶음에 붙으니 같이 받을 품목을 장바구니에 모두 넣으세요.</p>
+</header>
+
+<section class="card rates" aria-label="환율">
+  <div class="field"><label for="cur">해외 통화</label><select id="cur"></select></div>
+  <div class="field"><label for="rate-fx" id="rate-fx-label">GBP → KRW</label><input id="rate-fx" type="number" step="0.0001" min="0"></div>
+  <div class="field" id="rate-usd-wrap"><label for="rate-usd">USD → KRW <span class="muted">(배송비·면세 한도)</span></label><input id="rate-usd" type="number" step="0.01" min="0"></div>
+  <label class="check" for="manual-rates"><input type="checkbox" id="manual-rates"> 환율 직접 입력</label>
+  <button type="button" id="btn-refresh" class="primary">환율 자동 갱신</button>
+  <span id="rate-status" class="muted small"></span>
+</section>
+
+<section class="card" aria-labelledby="h-cart">
+  <div class="card-head"><h2 id="h-cart">장바구니 · 1회 발송분</h2><span class="muted small">같은 상자로 받을 품목을 모두 넣으세요</span></div>
+  <div id="cart" class="items"></div>
+  <div class="row-actions">
+    <button type="button" id="btn-add">+ 품목 추가</button>
+    <button type="button" id="btn-clear" class="ghost">비우기</button>
+  </div>
+  <p class="note">가격 차이 = 국내 가격 − 해외 가격 × 환율. 배송비와 세금을 넣기 전 값입니다. 관세율은 품목마다 다르니(완구·도서 0%, 공산품 대부분 8%, 의류 13% 등) 관세청 예상세액 조회로 확인해 넣으세요. 도서처럼 부가세가 면제되는 품목은 체크하세요.</p>
+</section>
+
+<section class="card" aria-labelledby="h-ship">
+  <div class="card-head"><h2 id="h-ship">배송 · 통관 · 결제</h2></div>
+  <div class="two-col">
+    <div class="stack">
+      <div class="field"><label for="limit">면세 한도 (발송국)</label>
+        <select id="limit">
+          <option value="150">$150 · 미국 외 일반</option>
+          <option value="200">$200 · 미국발 목록통관</option>
+        </select></div>
+      <div class="field"><label for="dom-ship" id="dom-ship-label">현지 배송비 (£, 배대지까지)</label><input id="dom-ship" type="number" step="0.01" min="0"></div>
+      <div class="field"><label for="brand-fee">해외 브랜드 수수료 (%)</label>
+        <div class="inline"><select id="brand-fee-preset" aria-label="브랜드 수수료 프리셋"><option value="0">0% · 미적용 (JCB 등)</option><option value="1.1">1.1% · 비자</option><option value="1.0">1.0% · 마스터카드</option><option value="1.4">1.4% · 아멕스</option><option value="0.8">0.8% · 유니온페이</option><option value="custom">직접 입력</option></select><input id="brand-fee" type="number" step="0.01" min="0"></div></div>
+      <div class="field"><label for="issuer-fee">카드사 해외서비스 수수료 (%)</label>
+        <div class="inline"><select id="issuer-fee-preset" aria-label="카드사 수수료 프리셋"><option value="0">0% · 미적용 (해외 특화 카드)</option><option value="0.18">0.18% · 신한·현대 등</option><option value="0.2">0.2% · 삼성·롯데·하나 등</option><option value="0.25">0.25% · KB국민 등</option><option value="0.3">0.3% · 우리 등</option><option value="custom">직접 입력</option></select><input id="issuer-fee" type="number" step="0.01" min="0"></div></div>
+      <div class="field"><label for="extra-fee">배대지 수수료 등 (₩, 발송 1회당)</label><input id="extra-fee" type="number" step="100" min="0"></div>
+      <p class="note">두 카드 수수료를 더한 비율을 해외 통화로 결제하는 금액(상품 + 현지 배송비 + 국제 배송비)에 적용합니다.</p>
+    </div>
+    <div class="stack">
+      <h3>배송 요금표 (USD, 구간 상한 kg)</h3>
+      <div class="table-wrap">
+        <table id="ship-table"><thead><tr><th>~ kg</th><th>요금 $</th><th></th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="row-actions"><button type="button" id="btn-ship-add">+ 구간 추가</button></div>
+    </div>
+  </div>
+  <details class="plain">
+    <summary>설정 백업 (복사 / 붙여넣기)</summary>
+    <p class="note">장바구니, 요금표, 환율은 이 브라우저에 자동 저장됩니다. 다른 기기나 다른 주소로 옮기려면 아래 JSON을 복사해 붙여넣으세요.</p>
+    <textarea id="backup" aria-label="백업 JSON"></textarea>
+    <div class="row-actions"><button type="button" id="btn-export">현재 설정 내보내기</button><button type="button" id="btn-import">붙여넣은 설정 적용</button><span id="backup-status" class="muted small"></span></div>
+  </details>
+</section>
+
+<section class="card" id="result" aria-live="polite" aria-labelledby="h-result">
+  <div class="card-head"><h2 id="h-result">결과</h2></div>
+  <div id="verdict" class="verdict"></div>
+  <div id="gauge" class="gauge ok">
+    <div class="gauge-text"><span>면세 한도 <strong id="gauge-usd"></strong></span><span id="gauge-note" class="muted"></span></div>
+    <div class="gauge-track"><div class="gauge-bar" id="gauge-bar"></div></div>
+  </div>
+  <table class="breakdown"><tbody id="breakdown"></tbody></table>
+  <div id="ship-warn" class="warn-box" hidden></div>
+  <div id="split" class="split"></div>
+  <details>
+    <summary>계산 가정과 주의점</summary>
+    <ul>
+      <li><strong>목록통관 대상 물품만</strong> 다룹니다. 의약품, 건강기능식품, 식품·주류, 검역 대상 농축수산물, 일부 화장품 등 목록통관 배제 물품은 일반 수입신고 대상이라 기준이 다릅니다. 미국발 $200 한도도 목록통관일 때만 적용됩니다.</li>
+      <li><strong>면세 판정</strong>: 해외 가격 합계 + 현지 배송비(국제 배송비 제외)를 달러로 환산해 미국발 $200, 그 외 $150 이하면 관세·부가세가 0입니다.</li>
+      <li><strong>한도 초과 시</strong> 초과분이 아니라 전체에 과세됩니다. 과세가격 = 물품가격 + 국제 배송비, 관세 = 과세가격 × 품목 관세율, 부가세 = (과세가격 + 관세) × 10%. 세액은 10원 미만 절사.</li>
+      <li><strong>관세율</strong>은 품목마다 직접 입력합니다. FTA 원산지 증명이 있으면 더 낮을 수 있습니다. 정확한 세액은 <a href="https://www.customs.go.kr/kcs/ad/tax/BuyTaxCalculation.do" target="_blank" rel="noopener">관세청 예상세액 조회</a>로 확인하세요.</li>
+      <li><strong>환율</strong>은 시장환율(open.er-api.com, 예비로 ECB)입니다. 관세청은 주간 고시 과세환율로 한도를 판정하므로 한도 근처라면 ‘환율 직접 입력’을 켜고 과세환율을 넣어 다시 확인하세요.</li>
+      <li><strong>분할 발송 시뮬레이션</strong>은 품목을 한도 이하 묶음으로 나눈 뒤 묶음마다 국제 배송비, 현지 배송비, 배대지 수수료를 다시 계산합니다. 같은 날 같은 곳에서 도착하면 합산과세될 수 있으니 발송일을 나누세요.</li>
+      <li><strong>배송 요금표 기본값은 예시</strong>입니다. 이용하는 배대지의 요금표로 바꿔 넣으세요. 배대지가 부피무게를 적용하면 실제 청구 무게가 더 클 수 있습니다.</li>
+    </ul>
+  </details>
+</section>
+
+<footer class="foot">
+  <div class="foot-links">
+    <a id="donate" class="donate" href="#" target="_blank" rel="noopener" hidden>커피 한 잔 후원하기</a>
+    <a id="repo-link" href="#" target="_blank" rel="noopener" hidden>GitHub에서 소스 보기</a>
+  </div>
+</footer>
+</div>
+
+<div id="bar" class="bar" hidden>
+  <div class="bar-in">
+    <div class="bar-main"><div class="bar-top"><span class="bar-label" id="bar-label"></span><span class="bar-amt" id="bar-amt"></span></div><span class="bar-gauge" id="bar-gauge"></span></div>
+    <button type="button" id="bar-go">결과 보기</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---- 공개 설정 ---- */
+var DONATE_URL='https://buymeacoffee.com/noodles97';   /* 비우면 후원 버튼이 숨겨집니다. */
+var DONATE_LABEL='커피 한 잔 후원하기';
+var REPO_URL='https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc';
+/* ------------------- */
+var $=function(s,el){return (el||document).querySelector(s);};
+var VAT=0.10;
+var CURRENCIES=[
+  {code:'GBP',sym:'£',name:'영국 파운드'},{code:'USD',sym:'$',name:'미국 달러'},{code:'EUR',sym:'€',name:'유로'},
+  {code:'JPY',sym:'¥',name:'일본 엔'},{code:'AUD',sym:'A$',name:'호주 달러'},{code:'CAD',sym:'C$',name:'캐나다 달러'},
+  {code:'CNY',sym:'CN¥',name:'중국 위안'},{code:'HKD',sym:'HK$',name:'홍콩 달러'},{code:'SGD',sym:'S$',name:'싱가포르 달러'},{code:'TWD',sym:'NT$',name:'대만 달러'}
+];
+var CUR={};CURRENCIES.forEach(function(c){CUR[c.code]=c;});
+var STORE_KEY='wh40k-import-calc-v1';
+var DEFAULT_RATES={asOf:'2026-10-20',source:'내장 기본값',USD:1330.79,GBP:1771.81,EUR:1492.8,JPY:8.3993,AUD:928.97,CAD:943.85,CNY:198.81,HKD:169.57,SGD:1039.85,TWD:40.958};
+var DEFAULT_SHIP=[{kg:0.5,usd:12},{kg:1,usd:15.8},{kg:1.5,usd:19.6},{kg:2,usd:23.4},{kg:3,usd:31}];
+var SAMPLE_ITEM={name:'예시 품목',kr:110500,fx:48.8,w:1,duty:0,vatExempt:false};
+var DEFAULT_DUTY=8;
+/* older saves used a category instead of a rate */
+var OLD_CATS={mini:[0,false],paint:[8,false],book:[0,true],other:[8,false]};
+
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function defaultState(){return{cur:'GBP',manualRates:false,limit:150,domShip:0,extraFee:0,brandFee:0,issuerFee:0,cart:[clone(SAMPLE_ITEM)],shipTable:clone(DEFAULT_SHIP),rates:clone(DEFAULT_RATES)};}
+function normalize(s){
+  s=s||{};
+  var st=Object.assign(defaultState(),s);
+  st.rates=Object.assign({},DEFAULT_RATES,st.rates||{});
+  if(!Array.isArray(st.cart))st.cart=[];
+  if(!Array.isArray(st.shipTable))st.shipTable=clone(DEFAULT_SHIP);
+  /* migrate older saves */
+  if(s.origin&&s.limit==null)st.limit=s.origin==='US'?200:150;
+  if(s.cardFee!=null&&s.brandFee==null)st.brandFee=num(s.cardFee);
+  if(s.cur==null){var first=st.cart.length&&st.cart[0].cur;st.cur=CUR[first]?first:(s.domShipCur&&CUR[s.domShipCur]?s.domShipCur:(s.origin==='US'?'USD':s.origin==='EU'?'EUR':'GBP'));}
+  if(s.manualRates==null&&st.rates.source==='직접 입력')st.manualRates=true;
+  st.cart.forEach(function(it){
+    if(it.duty==null){var m=OLD_CATS[it.cat]||[DEFAULT_DUTY,false];it.duty=m[0];if(it.vatExempt==null)it.vatExempt=m[1];}
+    if(it.vatExempt==null)it.vatExempt=false;
+    delete it.cat;delete it.cur;
+  });
+  ['origin','cardFee','domShipCur','presets'].forEach(function(k){delete st[k];});
+  if(!CUR[st.cur])st.cur='GBP';
+  st.limit=num(st.limit)===200?200:150;
+  st.manualRates=!!st.manualRates;
+  return st;
+}
+function load(){try{var raw=localStorage.getItem(STORE_KEY);if(raw){var s=JSON.parse(raw);if(s&&typeof s==='object')return normalize(s);}}catch(e){}return defaultState();}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}}
+var state=load();
+
+var nfKRW=new Intl.NumberFormat('ko-KR',{maximumFractionDigits:0});
+var nf0=new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+var nf2=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+var nf1=new Intl.NumberFormat('en-US',{maximumFractionDigits:1});
+var nf4=new Intl.NumberFormat('en-US',{maximumFractionDigits:4});
+function won(v){var n=Math.round(v);return(n<0?'−':'')+'₩'+nfKRW.format(Math.abs(n));}
+function money(v,code){var c=CUR[code];return (c?c.sym:code+' ')+(code==='JPY'?nf0.format(v):nf2.format(v));}
+function num(v){var n=parseFloat(v);return isFinite(n)?n:0;}
+function roundRate(v){return v>=100?Math.round(v*100)/100:Math.round(v*10000)/10000;}
+function round2(v){return Math.round(v*100)/100;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n){return String(n).padStart(2,'0');}
+function fmtDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());}
+function today(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function rate(code){return num(state.rates[code]);}
+function sym(){return CUR[state.cur].sym;}
+
+/* ---------- calculation ---------- */
+function lookupShip(weight,table){
+  var rows=table.map(function(r){return{kg:num(r.kg),usd:num(r.usd)};}).filter(function(r){return r.kg>0;}).sort(function(a,b){return a.kg-b.kg;});
+  if(!rows.length)return{usd:0,kg:0,over:true,empty:true};
+  for(var i=0;i<rows.length;i++){if(weight<=rows[i].kg+1e-9)return{usd:rows[i].usd,kg:rows[i].kg,over:false};}
+  var last=rows[rows.length-1];return{usd:last.usd,kg:last.kg,over:true};
+}
+/* One shipment: items that clear customs together (each item carries krw = fx × rate).
+   ctx = {usdKrw, domShipKrw, limit, shipTable, extraFee, brandFee, issuerFee} */
+function taxGroup(items,ctx){
+  var itemsKrw=items.reduce(function(a,i){return a+i.krw;},0);
+  var fxTotal=items.reduce(function(a,i){return a+i.fx;},0);
+  var weight=items.reduce(function(a,i){return a+i.w;},0);
+  var goodsKrw=itemsKrw+ctx.domShipKrw;
+  var goodsUsd=ctx.usdKrw>0?goodsKrw/ctx.usdKrw:0;
+  var exempt=goodsUsd<=ctx.limit+1e-9;
+  var ship=lookupShip(weight,ctx.shipTable);
+  var shipKrw=ship.usd*ctx.usdKrw;
+  var duty=0,vat=0;
+  if(!exempt&&itemsKrw>0){
+    items.forEach(function(it){
+      var share=it.krw/itemsKrw;
+      var cif=it.krw+ctx.domShipKrw*share+shipKrw*share;
+      var d=cif*it.duty/100;
+      duty+=d;vat+=it.vatExempt?0:(cif+d)*VAT;
+    });
+  }
+  duty=Math.floor(duty/10)*10;vat=Math.floor(vat/10)*10;
+  var payKrw=goodsKrw+shipKrw;
+  var brandFee=payKrw*ctx.brandFee/100,issuerFee=payKrw*ctx.issuerFee/100;
+  var total=goodsKrw+shipKrw+duty+vat+brandFee+issuerFee+ctx.extraFee;
+  return{itemsKrw:itemsKrw,fxTotal:fxTotal,weight:weight,goodsKrw:goodsKrw,goodsUsd:goodsUsd,exempt:exempt,ship:ship,shipKrw:shipKrw,duty:duty,vat:vat,brandFee:brandFee,issuerFee:issuerFee,total:total};
+}
+function compute(){
+  var fxKrw=rate(state.cur);
+  var ctx={fxKrw:fxKrw,usdKrw:rate('USD'),domShip:num(state.domShip),domShipKrw:num(state.domShip)*fxKrw,limit:num(state.limit)||150,shipTable:state.shipTable,extraFee:num(state.extraFee),brandFee:num(state.brandFee),issuerFee:num(state.issuerFee)};
+  var items=state.cart.map(function(i){return{name:i.name||'(이름 없음)',kr:num(i.kr),fx:num(i.fx),krw:num(i.fx)*fxKrw,w:num(i.w),duty:num(i.duty),vatExempt:!!i.vatExempt};}).filter(function(i){return i.kr>0||i.fx>0;});
+  var krTotal=items.reduce(function(a,i){return a+i.kr;},0);
+  var single=taxGroup(items,ctx);
+  var diff=krTotal-single.total;
+  var split=null;
+  if(items.length>=2&&!single.exempt&&ctx.usdKrw>0){
+    var cap=ctx.limit-ctx.domShipKrw/ctx.usdKrw;
+    var sorted=items.map(function(i){return Object.assign({},i,{usd:i.krw/ctx.usdKrw});}).sort(function(a,b){return b.usd-a.usd;});
+    var bins=[];
+    sorted.forEach(function(it){
+      for(var b=0;b<bins.length;b++){if(bins[b].usd+it.usd<=cap+1e-9){bins[b].items.push(it);bins[b].usd+=it.usd;return;}}
+      bins.push({items:[it],usd:it.usd});
+    });
+    if(bins.length>=2){
+      var groups=bins.map(function(b){return{items:b.items,r:taxGroup(b.items,ctx)};});
+      var total=groups.reduce(function(a,g){return a+g.r.total;},0);
+      split={groups:groups,total:total,saving:single.total-total};
+    }
+  }
+  return{ctx:ctx,items:items,krTotal:krTotal,single:single,diff:diff,split:split};
+}
+
+/* ---------- rendering ---------- */
+function renderRateStatus(msg,cls){
+  var el=$('#rate-status');
+  el.className='small '+(cls||'muted');
+  el.textContent=msg||('기준: '+state.rates.source+' · '+state.rates.asOf);
+}
+function renderRates(){
+  var sel=$('#cur');
+  if(!sel.options.length)sel.innerHTML=CURRENCIES.map(function(c){return '<option value="'+c.code+'">'+c.code+' · '+c.name+'</option>';}).join('');
+  sel.value=state.cur;
+  $('#rate-fx-label').textContent=state.cur+' → KRW';
+  $('#rate-fx').value=state.rates[state.cur]!=null?state.rates[state.cur]:'';
+  $('#rate-usd').value=state.rates.USD!=null?state.rates.USD:'';
+  $('#rate-usd-wrap').hidden=(state.cur==='USD');
+  $('#manual-rates').checked=state.manualRates;
+  $('#rate-fx').readOnly=!state.manualRates;
+  $('#rate-usd').readOnly=!state.manualRates;
+  var fxLbls=document.querySelectorAll('[data-lbl=fx]');for(var i=0;i<fxLbls.length;i++)fxLbls[i].textContent='해외 가격 '+sym();
+  $('#dom-ship-label').textContent='현지 배송비 ('+sym()+', 배대지까지)';
+  renderRateStatus();
+}
+function syncFeePreset(sel,value){
+  for(var i=0;i<sel.options.length;i++){var ov=sel.options[i].value;if(ov!=='custom'&&Math.abs(num(ov)-num(value))<1e-9){sel.value=ov;return;}}
+  sel.value='custom';
+}
+function setFee(inputSel,presetSel,value){$(inputSel).value=value;syncFeePreset($(presetSel),value);}
+function renderSettings(){
+  $('#limit').value=String(state.limit);
+  $('#dom-ship').value=state.domShip;
+  $('#extra-fee').value=state.extraFee;
+  setFee('#brand-fee','#brand-fee-preset',state.brandFee);
+  setFee('#issuer-fee','#issuer-fee-preset',state.issuerFee);
+}
+function renderCart(){
+  var box=$('#cart');
+  if(!state.cart.length){box.innerHTML='<div class="empty">품목이 없습니다. ‘+ 품목 추가’를 누르세요.</div>';return;}
+  box.innerHTML=state.cart.map(function(it,i){
+    return '<div class="item" data-i="'+i+'">'+
+      '<div class="field f-name"><label for="it-name-'+i+'">품목 '+(i+1)+'</label><input type="text" id="it-name-'+i+'" data-k="name" value="'+esc(it.name)+'" placeholder="품목명"></div>'+
+      '<div class="field f-money"><label for="it-kr-'+i+'">국내 가격 ₩</label><input type="number" id="it-kr-'+i+'" data-k="kr" min="0" step="100" value="'+esc(it.kr)+'"></div>'+
+      '<div class="field f-money"><label for="it-fx-'+i+'" data-lbl="fx">해외 가격 '+sym()+'</label><input type="number" id="it-fx-'+i+'" data-k="fx" min="0" step="0.01" value="'+esc(it.fx)+'"></div>'+
+      '<div class="field f-small"><label for="it-w-'+i+'">무게 kg</label><input type="number" id="it-w-'+i+'" data-k="w" min="0" step="0.05" value="'+esc(it.w)+'"></div>'+
+      '<div class="field f-small"><label for="it-duty-'+i+'">관세율 %</label><input type="number" id="it-duty-'+i+'" data-k="duty" min="0" step="0.5" value="'+esc(it.duty)+'"></div>'+
+      '<div class="field f-check"><label for="it-vx-'+i+'">부가세 면제</label><div class="box"><input type="checkbox" id="it-vx-'+i+'" data-k="vatExempt"'+(it.vatExempt?' checked':'')+'></div></div>'+
+      '<div class="field f-diff"><span class="lbl">가격 차이</span><span class="num" data-cell="diff"></span></div>'+
+      '<button type="button" class="del" data-act="del" aria-label="품목 삭제" title="삭제">✕</button>'+
+      '</div>';
+  }).join('');
+  renderRowDiffs();
+}
+function renderRowDiffs(){
+  var fxKrw=rate(state.cur);
+  var trs=document.querySelectorAll('#cart .item[data-i]');
+  for(var i=0;i<trs.length;i++){
+    var it=state.cart[+trs[i].getAttribute('data-i')];if(!it)continue;
+    var d=num(it.kr)-num(it.fx)*fxKrw;
+    var cell=trs[i].querySelector('[data-cell=diff]');
+    cell.textContent=(d>0?'+':'')+won(d);cell.className='num '+(d>0?'pos':d<0?'neg':'');
+  }
+}
+function renderShip(){
+  $('#ship-table tbody').innerHTML=state.shipTable.map(function(r,i){
+    return '<tr data-i="'+i+'">'+
+      '<td><input type="number" id="sh-kg-'+i+'" data-k="kg" min="0" step="0.5" value="'+esc(r.kg)+'"></td>'+
+      '<td><input type="number" id="sh-usd-'+i+'" data-k="usd" min="0" step="0.1" value="'+esc(r.usd)+'"></td>'+
+      '<td><button type="button" class="icon" data-act="del" aria-label="구간 삭제" title="삭제">✕</button></td></tr>';
+  }).join('');
+}
+function renderResult(){
+  var r=compute(),ctx=r.ctx,items=r.items,krTotal=r.krTotal,single=r.single,diff=r.diff,split=r.split,c=state.cur;
+  var v=$('#verdict');
+  if(!items.length){v.className='verdict';v.innerHTML='<div class="v-label">장바구니가 비어 있습니다</div><div class="v-sub">품목을 추가하면 바로 계산됩니다.</div>';}
+  else if(diff>0){v.className='verdict good';v.innerHTML='<div class="v-label">해외 직구가 이득</div><div class="v-amount">'+won(diff)+'</div><div class="v-sub">국내 가격 합계 대비 '+nf1.format(krTotal>0?diff/krTotal*100:0)+'% 절약'+(single.exempt?' · 면세':' · 세금 포함')+'</div>';}
+  else if(diff<0){v.className='verdict domestic';v.innerHTML='<div class="v-label">국내 구매가 이득</div><div class="v-amount">'+won(-diff)+'</div><div class="v-sub">해외 총액이 국내 가격 합계보다 '+nf1.format(krTotal>0?-diff/krTotal*100:0)+'% 비쌉니다</div>';}
+  else{v.className='verdict';v.innerHTML='<div class="v-label">차이 없음</div><div class="v-sub">두 경로의 총액이 같습니다.</div>';}
+
+  var bar=$('#bar');
+  bar.className='bar '+(items.length?(diff>0?'good':diff<0?'domestic':''):'');
+  $('#bar-label').textContent=!items.length?'장바구니가 비어 있습니다':diff>0?'해외 직구가 이득':diff<0?'국내 구매가 이득':'차이 없음';
+  $('#bar-amt').textContent=items.length&&diff!==0?won(Math.abs(diff)):'';
+
+  var ratio=ctx.limit>0?single.goodsUsd/ctx.limit:0;
+  $('#bar-gauge').textContent='면세 한도 $'+nf2.format(single.goodsUsd)+' / $'+ctx.limit+(ratio>1?' · 초과':'');
+  $('#gauge').className='gauge '+(ratio>1?'over':ratio>0.85?'near':'ok');
+  $('#gauge-bar').style.width=(Math.min(ratio,1)*100)+'%';
+  $('#gauge-usd').textContent='$'+nf2.format(single.goodsUsd)+' / $'+ctx.limit;
+  $('#gauge-note').textContent=ratio>1?'$'+nf2.format(single.goodsUsd-ctx.limit)+' 초과 → 전체 과세':'한도까지 $'+nf2.format(ctx.limit-single.goodsUsd)+' 남음';
+
+  var rows=[];
+  function row(label,val,sub,cls){rows.push('<tr'+(cls?' class="'+cls+'"':'')+'><td>'+label+(sub?'<p class="sub">'+sub+'</p>':'')+'</td><td class="num">'+val+'</td></tr>');}
+  row('국내 가격 합계',won(krTotal));
+  row('해외 가격 합계',won(single.itemsKrw),money(single.fxTotal,c)+' × '+nf4.format(ctx.fxKrw));
+  if(ctx.domShip>0)row('현지 배송비',won(ctx.domShipKrw),money(ctx.domShip,c));
+  row('국제 배송비',won(single.shipKrw),single.ship.empty?'요금표가 비어 있음':'총 '+nf1.format(single.weight)+'kg → '+nf1.format(single.ship.kg)+'kg 구간 $'+nf2.format(single.ship.usd));
+  row('관세',won(single.duty),single.exempt?'면세 한도 이내':'품목별 관세율 적용');
+  row('부가세 10%',won(single.vat),single.exempt?'면세 한도 이내':'(과세가격 + 관세) × 10%');
+  if(ctx.brandFee>0)row('해외 브랜드 수수료',won(single.brandFee),nf2.format(ctx.brandFee)+'% × 해외 결제액');
+  if(ctx.issuerFee>0)row('카드사 해외서비스 수수료',won(single.issuerFee),nf2.format(ctx.issuerFee)+'% × 해외 결제액');
+  if(ctx.extraFee>0)row('배대지 수수료 등',won(ctx.extraFee));
+  row('해외 총액',won(single.total),null,'total');
+  row('차액 (국내 − 해외)',won(diff),null,'total '+(diff>0?'pos':diff<0?'neg':''));
+  $('#breakdown').innerHTML=rows.join('');
+
+  var sw=$('#ship-warn');
+  if(items.length&&single.ship.empty){sw.hidden=false;sw.textContent='배송 요금표가 비어 있어 국제 배송비를 0으로 계산했습니다.';}
+  else if(items.length&&single.ship.over){sw.hidden=false;sw.textContent='총 무게 '+nf1.format(single.weight)+'kg가 요금표 최대 구간('+nf1.format(single.ship.kg)+'kg)을 넘습니다. 마지막 구간 요금을 적용했으니 요금표에 구간을 추가하세요.';}
+  else sw.hidden=true;
+
+  var sp=$('#split');
+  if(split){
+    var sv=split.saving;
+    sp.innerHTML='<h3>분할 발송 시뮬레이션</h3><p class="split-lead">'+split.groups.length+'회로 나눠 보내면 해외 총액 <strong>'+won(split.total)+'</strong> <span class="'+(sv>0?'pos':'neg')+'">(단일 발송 대비 '+(sv>0?won(sv)+' 절약':won(-sv)+' 손해')+')</span></p><ol>'+
+      split.groups.map(function(gp){return '<li>'+gp.items.map(function(i){return esc(i.name);}).join(', ')+' <span class="muted">· $'+nf2.format(gp.r.goodsUsd)+' · '+nf1.format(gp.r.weight)+'kg · 배송 '+won(gp.r.shipKrw)+'</span> <span class="pill '+(gp.r.exempt?'ok':'tax')+'">'+(gp.r.exempt?'면세':'세금 '+won(gp.r.duty+gp.r.vat))+'</span> <span class="muted">소계 '+won(gp.r.total)+'</span></li>';}).join('')+
+      '</ol><p class="note">같은 날 같은 배대지에서 도착하면 합산과세될 수 있습니다. 발송일을 나누세요.</p>';
+  }else if(items.length>=2&&single.exempt){sp.innerHTML='<p class="note">면세 한도 이내라 분할 발송은 필요 없습니다.</p>';}
+  else sp.innerHTML='';
+}
+function renderAll(){renderSettings();renderRates();renderCart();renderShip();renderResult();}
+
+/* ---------- exchange rates ---------- */
+function fetchRates(){
+  renderRateStatus('환율 불러오는 중…');
+  var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  var timer=ctrl?setTimeout(function(){ctrl.abort();},8000):null;
+  var opts={cache:'no-store',signal:ctrl?ctrl.signal:undefined};
+  var codes=CURRENCIES.map(function(c){return c.code;});
+  function fromUsdBase(r,asOf,source){
+    var k=r.KRW;var out={asOf:asOf,source:source};
+    for(var i=0;i<codes.length;i++){if(!(r[codes[i]]>0))throw new Error('missing '+codes[i]);out[codes[i]]=roundRate(k/r[codes[i]]);}
+    return out;
+  }
+  return fetch('https://open.er-api.com/v6/latest/USD',opts).then(function(r){return r.json();}).then(function(d){
+    if(d&&d.result==='success'&&d.rates&&d.rates.KRW>0)return fromUsdBase(d.rates,fmtDate(new Date(d.time_last_update_unix*1000)),'open.er-api.com');
+    throw new Error('bad');
+  }).catch(function(){
+    return fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols='+codes.filter(function(c){return c!=='USD';}).join(',')+',KRW',opts).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.rates&&d.rates.KRW>0){var r2=Object.assign({USD:1},d.rates);return fromUsdBase(r2,d.date+' (ECB)','frankfurter.dev');}
+      throw new Error('bad');
+    });
+  }).then(function(got){
+    if(timer)clearTimeout(timer);
+    state.rates=got;state.manualRates=false;save();renderRates();renderRowDiffs();renderResult();
+  }).catch(function(){
+    if(timer)clearTimeout(timer);
+    renderRateStatus('자동 갱신에 실패했습니다. 마지막 값('+state.rates.source+' · '+state.rates.asOf+')을 쓰고 있으니 필요하면 ‘환율 직접 입력’을 켜고 넣으세요.','warn-text');
+  });
+}
+
+/* ---------- events ---------- */
+function bind(){
+  $('#cur').addEventListener('change',function(e){state.cur=e.target.value;save();renderRates();renderRowDiffs();renderResult();});
+  $('#manual-rates').addEventListener('change',function(e){
+    state.manualRates=e.target.checked;save();renderRates();
+    if(state.manualRates){$('#rate-fx').focus();$('#rate-fx').select();}else fetchRates();
+  });
+  function onRateEdit(code,el){
+    if(!state.manualRates)return;
+    state.rates[code]=num(el.value);state.rates.source='직접 입력';state.rates.asOf=today();
+    save();renderRateStatus();renderRowDiffs();renderResult();
+  }
+  $('#rate-fx').addEventListener('input',function(e){onRateEdit(state.cur,e.target);});
+  $('#rate-usd').addEventListener('input',function(e){onRateEdit('USD',e.target);});
+  $('#btn-refresh').addEventListener('click',function(){fetchRates();});
+
+  $('#limit').addEventListener('change',function(e){state.limit=num(e.target.value)===200?200:150;save();renderResult();});
+  [['#dom-ship','domShip'],['#extra-fee','extraFee']].forEach(function(pair){
+    $(pair[0]).addEventListener('input',function(e){state[pair[1]]=num(e.target.value);save();renderResult();});
+  });
+  function bindFee(inputSel,presetSel,key){
+    var input=$(inputSel),sel=$(presetSel);
+    sel.addEventListener('change',function(){
+      if(sel.value==='custom'){input.focus();input.select();return;}
+      state[key]=num(sel.value);input.value=state[key];save();renderResult();
+    });
+    input.addEventListener('input',function(){state[key]=num(input.value);syncFeePreset(sel,state[key]);save();renderResult();});
+  }
+  bindFee('#brand-fee','#brand-fee-preset','brandFee');
+  bindFee('#issuer-fee','#issuer-fee-preset','issuerFee');
+
+  var tb=$('#cart');
+  function onCartEdit(e){
+    var tr=e.target.closest('.item[data-i]');if(!tr)return;
+    var k=e.target.getAttribute('data-k');if(!k)return;
+    var it=state.cart[+tr.getAttribute('data-i')];if(!it)return;
+    it[k]=k==='name'?e.target.value:k==='vatExempt'?e.target.checked:num(e.target.value);
+    save();renderRowDiffs();renderResult();
+  }
+  tb.addEventListener('input',onCartEdit);
+  tb.addEventListener('change',onCartEdit);
+  tb.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-act=del]');if(!b)return;
+    state.cart.splice(+b.closest('.item[data-i]').getAttribute('data-i'),1);save();renderCart();renderResult();
+  });
+  $('#btn-add').addEventListener('click',function(){
+    state.cart.push({name:'',kr:0,fx:0,w:0.5,duty:DEFAULT_DUTY,vatExempt:false});save();renderCart();renderResult();
+    var el=$('#it-name-'+(state.cart.length-1));if(el)el.focus();
+  });
+  $('#btn-clear').addEventListener('click',function(){state.cart=[];save();renderCart();renderResult();});
+
+  var st=$('#ship-table tbody');
+  st.addEventListener('input',function(e){
+    var tr=e.target.closest('tr[data-i]');if(!tr)return;
+    var k=e.target.getAttribute('data-k');if(!k)return;
+    var r=state.shipTable[+tr.getAttribute('data-i')];if(!r)return;
+    r[k]=num(e.target.value);save();renderResult();
+  });
+  st.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-act=del]');if(!b)return;
+    state.shipTable.splice(+b.closest('tr[data-i]').getAttribute('data-i'),1);save();renderShip();renderResult();
+  });
+  $('#btn-ship-add').addEventListener('click',function(){
+    var last=state.shipTable[state.shipTable.length-1];
+    state.shipTable.push({kg:last?round2(num(last.kg)+0.5):0.5,usd:last?num(last.usd):0});
+    save();renderShip();renderResult();
+    var el=$('#sh-usd-'+(state.shipTable.length-1));if(el){el.focus();el.select();}
+  });
+
+  $('#btn-export').addEventListener('click',function(){
+    var txt=JSON.stringify(state,null,1),ta=$('#backup'),s=$('#backup-status');
+    ta.value=txt;
+    function manual(){ta.select();s.textContent='아래 내용을 직접 복사하세요.';}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){s.textContent='클립보드에 복사했습니다.';},manual);}else manual();
+  });
+  $('#btn-import').addEventListener('click',function(){
+    var s=$('#backup-status');
+    try{var obj=JSON.parse($('#backup').value);if(!obj||typeof obj!=='object'||!Array.isArray(obj.cart))throw new Error('format');state=normalize(obj);save();renderAll();s.textContent='적용했습니다.';}
+    catch(err){s.textContent='JSON 형식이 올바르지 않습니다. ‘현재 설정 내보내기’로 만든 내용을 붙여넣으세요.';}
+  });
+}
+
+renderAll();
+bind();
+/* the fixed bar shows only while the result card is scrolled out of view */
+(function(){
+  var bar=$('#bar'),res=$('#result');
+  $('#bar-go').addEventListener('click',function(){res.scrollIntoView({behavior:'smooth',block:'start'});});
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){bar.hidden=es[0].isIntersecting;},{threshold:0.05}).observe(res);
+  }else bar.hidden=false;
+})();
+(function(){
+  var d=$('#donate');if(DONATE_URL){d.href=DONATE_URL;d.textContent=DONATE_LABEL;d.hidden=false;}
+  var r=$('#repo-link');if(REPO_URL){r.href=REPO_URL;r.hidden=false;}
+  if('serviceWorker' in navigator&&document.querySelector('link[rel=manifest]')&&(location.protocol==='https:'||location.hostname==='localhost')){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  }
+})();
+if(!state.manualRates)fetchRates();
+})();
+</script>
+</body>
+</html>

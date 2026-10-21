@@ -4,5 +4,5 @@
   description: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG로 바꾸고 크기도 줄입니다. 파일이 서버로 올라가지 않고 브라우저 안에서만 처리됩니다.
 - name: 해외 직구 계산기
   url: https://noodles97.github.io/direct-import-calc/
-  repo: https://github.com/noodles97/direct-import-calc
+  repo: https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc
   description: 국내 구매와 해외 직구 총비용을 환율, 배송비, 면세 한도, 관세, 부가세, 카드 수수료까지 넣어 비교합니다. 휴대전화 홈 화면에 추가해 앱처럼 쓸 수 있습니다.

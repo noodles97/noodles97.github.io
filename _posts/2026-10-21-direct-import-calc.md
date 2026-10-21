@@ -14,4 +14,4 @@ tags: [앱]
 - 한도를 넘는 경우 몇 회로 나눠 보내는 편이 유리한지 시뮬레이션합니다.
 - 휴대전화에서는 홈 화면에 추가해 앱처럼 쓸 수 있고, 입력한 내용은 브라우저에 저장됩니다.
 
-참고용 계산이라 실제 세금은 통관 시 달라질 수 있습니다. 소스는 [GitHub](https://github.com/noodles97/direct-import-calc)에 있고, 고치거나 가져다 쓰셔도 됩니다.
+참고용 계산이라 실제 세금은 통관 시 달라질 수 있습니다. 소스는 [GitHub](https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc)에 있고, 고치거나 가져다 쓰셔도 됩니다.
