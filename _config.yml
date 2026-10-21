@@ -6,6 +6,7 @@ lang: ko
 timezone: Asia/Seoul
 permalink: /blog/:year/:month/:day/:title/
 donate_url: https://buymeacoffee.com/noodles97
+google_analytics: G-82CM8WMWCW
 markdown: kramdown
 plugins:
   - jekyll-feed
