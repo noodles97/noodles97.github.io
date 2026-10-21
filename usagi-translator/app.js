@@ -4,8 +4,8 @@ const $ = (id) => document.getElementById(id);
 const src = $('src'), out = $('out'), note = $('note'), glossBox = $('gloss');
 const SAMPLES = {
   cipher: '하, 우르르르, 부르르르, 하. 우사기 번역기 해줘. 괜찮은데?',
-  talk: '찾았다! 오늘 점심 뭐 먹을까? 같이 가자. 맛있는 거 먹고 싶어, 그치?',
-  talkUsagi: '야하! 우라 하아? 푸루야 프루루루 후응 우라우라 야하야하!',
+  talk: '찾았다! 배고파, 같이 밥 먹자. 맛있겠다, 그치? 요즘 뭐해?',
+  talkUsagi: '야하! 하아? 하아? 푸루야 쥬르리 후응 우-라- 이- 푸루루루루루',
 };
 let noteTimer = 0;
 
@@ -21,7 +21,7 @@ function render() {
   const cipher = mode() === 'cipher';
   $('src-label').textContent = encoding ? '한국어' : '우사기어';
   $('out-label').textContent = encoding ? '우사기어' : '한국어';
-  src.placeholder = encoding ? `여기에 쓰면 바로 바뀝니다. 예: ${cipher ? SAMPLES.cipher : SAMPLES.talk}` : `우사기어를 붙여 넣으면 바로 풀립니다. 예: ${cipher ? '우 하 푸루야 우라아 야 프루루' : SAMPLES.talkUsagi}`;
+  src.placeholder = encoding ? `여기에 쓰면 바로 바뀝니다. 예: ${cipher ? SAMPLES.cipher : SAMPLES.talk}` : `우사기어를 붙여 넣으면 바로 풀립니다. 예: ${cipher ? '우 하 푸루야 우라아 야아 프루루' : SAMPLES.talkUsagi}`;
   out.placeholder = encoding ? '우라 하? 야하 푸루야' : '풀린 글이 여기에 나옵니다';
   $('opt-script').hidden = !encoding;
   $('share').hidden = !cipher;
@@ -129,7 +129,9 @@ function table(title, names, pairs) {
 $('tables').innerHTML =
   table('초성', CHO_NAMES, TABLES.cho) + table('중성', JUNG_NAMES, TABLES.jung) + table('받침', JONG_NAMES, TABLES.jong) +
   table('16진수 (한글 아닌 글자)', [...'0123456789ABCDEF'], TABLES.hex);
-$('dict').innerHTML = GLOSSARY.map((e) => `<tr><td><b>${e.ko}</b><br><span class="ja">${e.ja}</span></td><td>${e.meanings.join(' · ')}</td><td>${e.when}</td></tr>`).join('');
+const row = (e) => `<tr><td><b>${e.ko}</b><br><span class="ja">${e.ja}</span></td><td>${e.meanings.join(' · ')}</td><td>${e.when}</td></tr>`;
+$('dict').innerHTML = GLOSSARY.filter((e) => !e.sfx).map(row).join('') +
+  '<tr class="dict-sub"><th colspan="3">효과음 계열 (우사기 말풍선에서 난 소리)</th></tr>' + GLOSSARY.filter((e) => e.sfx).map(row).join('');
 
 $('year').textContent = new Date().getFullYear();
 readHash();

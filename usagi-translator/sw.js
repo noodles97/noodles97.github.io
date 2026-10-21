@@ -1,5 +1,5 @@
 // 네트워크 우선, 실패하면 캐시. 한 번 연 뒤에는 오프라인에서도 열립니다.
-const CACHE = 'usagi-translator-v2';
+const CACHE = 'usagi-translator-v3';
 const ASSETS = ['./', './index.html', './style.css', './app.js', './usagi.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (e) => {
