@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>우사기 번역기 · noodles97</title>
+<meta name="description" content="한국어를 우사기 말로 바꾸고, 우사기 말을 다시 한국어로 되돌리는 번역기. 우라, 하?, 야하, 프루랴. 번역한 글은 링크로 보내 친구가 풀어 볼 수 있습니다.">
+<meta name="theme-color" content="#28499a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="우사기 번역기">
+<meta property="og:title" content="우사기 번역기">
+<meta property="og:description" content="한국어를 우사기 말로, 우사기 말을 다시 한국어로. 우라, 하?, 야하, 프루랴.">
+<meta property="og:image" content="https://noodles97.github.io/usagi-translator/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+<header class="site-head">
+  <a class="brand" href="/">noodles97</a>
+  <nav class="nav" aria-label="주 메뉴"><a href="/apps/">앱</a><a href="/blog/">블로그</a></nav>
+</header>
+
+<main class="content">
+  <section class="hero">
+    <h1 class="page-title">우사기 번역기</h1>
+    <p class="lead">한국어를 우사기 말로 바꾸고, 우사기 말을 다시 한국어로 되돌립니다. 글자마다 소리가 정해져 있어서 번역한 글은 그대로 풀립니다. 링크로 보내면 받은 사람이 바로 읽을 수 있습니다.</p>
+  </section>
+
+  <section class="translator" aria-label="번역">
+    <div class="dir-bar">
+      <div class="seg" role="radiogroup" aria-label="번역 방향">
+        <label><input type="radio" name="dir" value="encode" checked><span>한국어 → 우사기어</span></label>
+        <label><input type="radio" name="dir" value="decode"><span>우사기어 → 한국어</span></label>
+      </div>
+      <button type="button" class="btn btn-small" id="swap" title="결과를 입력으로 옮기고 방향을 바꿉니다">↔ 바꾸기</button>
+    </div>
+
+    <div class="panes">
+      <div class="pane">
+        <div class="pane-head"><label for="src" id="src-label">한국어</label><span class="count" id="src-count">0자</span></div>
+        <textarea id="src" rows="5" placeholder="여기에 쓰면 바로 바뀝니다. 예: 하, 우르르르, 부르르르, 하." autocomplete="off" spellcheck="false"></textarea>
+        <div class="pane-foot">
+          <button type="button" class="btn btn-small" id="sample">예시 넣기</button>
+          <button type="button" class="btn btn-small" id="clear">지우기</button>
+        </div>
+      </div>
+      <div class="pane pane-out">
+        <div class="pane-head"><label for="out" id="out-label">우사기어</label><span class="count" id="out-count"></span></div>
+        <textarea id="out" rows="5" readonly placeholder="우라 하? 야하 프루랴" aria-live="polite"></textarea>
+        <div class="pane-foot">
+          <p class="note" id="note"></p>
+          <div class="actions">
+            <button type="button" class="btn btn-small" id="share">링크 공유</button>
+            <button type="button" class="btn btn-small btn-primary" id="copy">복사</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opts" id="opts">
+      <div class="opt">
+        <span class="opt-label">표기</span>
+        <div class="seg seg-small" role="radiogroup" aria-label="표기">
+          <label><input type="radio" name="script" value="ko" checked><span>한글 (우라 하?)</span></label>
+          <label><input type="radio" name="script" value="ja"><span>가타카나 (ウラ ハ?)</span></label>
+        </div>
+      </div>
+      <label class="opt check"><input type="checkbox" id="vibe"> 흉내 모드 <small>(느낌만 살리고 뜻은 버립니다. 되돌릴 수 없음)</small></label>
+    </div>
+  </section>
+
+  <details class="info">
+    <summary>어떻게 바꾸나요?</summary>
+    <div class="info-body">
+      <p>한글 한 글자를 초성·중성·종성으로 나누고, 각각을 우사기 소리로 바꿉니다. 초성은 <b>우</b>로, 중성은 <b>하</b>나 <b>야</b>로, 받침은 <b>프·푸·부</b>로 시작하기 때문에 어디서 글자가 끊기는지 알 수 있고, 그래서 다시 한국어로 풀 수 있습니다. 예를 들어 <b>안</b>은 ㅇ+ㅏ+ㄴ이라 <b>우</b>+<b>하</b>+<b>프</b>, 즉 <b>우하프</b>가 됩니다.</p>
+      <p>로마자, 숫자, 가나, 한자처럼 한글이 아닌 글자는 <b>뿌</b> 뒤에 글자 번호를 적습니다. 띄어쓰기, 문장 부호, 이모지는 그대로 둡니다. 가타카나 표기는 같은 규칙을 일본어 글자로 적은 것이라 두 표기가 섞여 있어도 풀립니다.</p>
+      <div class="tables" id="tables"></div>
+      <p>번역은 전부 이 브라우저 안에서 끝나고, 입력한 글은 어디로도 전송되지 않습니다. 링크 공유는 번역된 글을 주소 뒤에 붙이는 방식입니다.</p>
+    </div>
+  </details>
+</main>
+
+<footer class="site-foot">
+  <div class="foot-links">
+    <span>© <span id="year"></span> noodles97</span>
+    <a href="https://github.com/noodles97/noodles97.github.io/tree/main/usagi-translator" rel="noopener">소스 보기 (GitHub)</a>
+  </div>
+  <a class="donate donate-small" href="https://buymeacoffee.com/noodles97" rel="noopener">커피 한 잔 후원하기</a>
+</footer>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
