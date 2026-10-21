@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>이미지 변환기 · noodles97</title>
+<meta name="description" content="PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG로 바꾸는 브라우저 이미지 변환기. 파일이 서버로 올라가지 않고 기기 안에서만 처리됩니다.">
+<meta name="theme-color" content="#28499a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="이미지 변환">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+<header class="site-head">
+  <a class="brand" href="/">noodles97</a>
+  <nav class="nav" aria-label="주 메뉴"><a href="/apps/">앱</a><a href="/blog/">블로그</a></nav>
+</header>
+
+<main class="content">
+  <section class="hero">
+    <h1 class="page-title">이미지 변환기</h1>
+    <p class="lead">이미지를 올리면 원하는 형식으로 바꿔 내려받습니다. 모든 처리가 이 브라우저 안에서 끝나고, 파일은 어디로도 전송되지 않습니다.</p>
+  </section>
+
+  <label class="drop" id="drop" for="file-input">
+    <input id="file-input" type="file" multiple accept="image/*,.heic,.heif,.avif,.tif,.tiff,.svg,.ico,.bmp,.jxl">
+    <span class="drop-title">이미지를 여기에 끌어다 놓거나 눌러서 선택</span>
+    <span class="drop-sub">여러 장을 한 번에 넣을 수 있고, 클립보드 이미지를 붙여넣어도 됩니다.</span>
+  </label>
+
+  <form class="settings" id="settings" autocomplete="off">
+    <div class="field">
+      <label for="format">출력 형식</label>
+      <select id="format" name="format">
+        <option value="png">PNG</option>
+        <option value="jpeg">JPEG</option>
+        <option value="webp">WebP</option>
+        <option value="avif">AVIF</option>
+        <option value="gif">GIF</option>
+        <option value="bmp">BMP</option>
+        <option value="tiff">TIFF</option>
+        <option value="ico">ICO (아이콘)</option>
+        <option value="pdf">PDF</option>
+        <option value="svg">SVG (래스터 포함)</option>
+      </select>
+    </div>
+    <div class="field" data-for="quality">
+      <label for="quality">품질 <output id="quality-out">85</output></label>
+      <input id="quality" name="quality" type="range" min="1" max="100" value="85">
+    </div>
+    <div class="field">
+      <label for="resize">크기 조절</label>
+      <div class="row">
+        <select id="resize" name="resize">
+          <option value="none">원본 크기</option>
+          <option value="long">긴 변 기준 (px)</option>
+          <option value="width">너비 기준 (px)</option>
+          <option value="height">높이 기준 (px)</option>
+          <option value="percent">비율 (%)</option>
+        </select>
+        <input id="resize-value" name="resizeValue" type="number" min="1" step="1" value="1920" hidden aria-label="크기 값">
+      </div>
+    </div>
+    <div class="field check" data-for="upscale">
+      <label><input id="upscale" name="upscale" type="checkbox"> 작은 이미지도 키우기</label>
+    </div>
+    <div class="field" data-for="background">
+      <label for="background">배경색 <small>(투명 영역)</small></label>
+      <div class="row"><input id="background" name="background" type="color" value="#ffffff"><code id="background-out">#ffffff</code></div>
+    </div>
+    <div class="field check" data-for="dither">
+      <label><input id="dither" name="dither" type="checkbox" checked> 디더링 (색 계조를 부드럽게)</label>
+    </div>
+    <div class="field" data-for="pdfPage">
+      <label for="pdf-page">PDF 용지</label>
+      <select id="pdf-page" name="pdfPage">
+        <option value="image">이미지 크기 그대로</option>
+        <option value="a4">A4에 맞춤</option>
+        <option value="letter">Letter에 맞춤</option>
+      </select>
+    </div>
+    <div class="field wide" data-for="icoSizes">
+      <span class="label">아이콘 크기</span>
+      <div class="chips" id="ico-sizes">
+        <label><input type="checkbox" name="icoSizes" value="16" checked> 16</label>
+        <label><input type="checkbox" name="icoSizes" value="24"> 24</label>
+        <label><input type="checkbox" name="icoSizes" value="32" checked> 32</label>
+        <label><input type="checkbox" name="icoSizes" value="48" checked> 48</label>
+        <label><input type="checkbox" name="icoSizes" value="64"> 64</label>
+        <label><input type="checkbox" name="icoSizes" value="128"> 128</label>
+        <label><input type="checkbox" name="icoSizes" value="256" checked> 256</label>
+      </div>
+    </div>
+    <p class="hint" id="format-hint"></p>
+  </form>
+
+  <section class="results" id="results" hidden>
+    <div class="results-head">
+      <p class="summary" id="summary"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="clear">목록 비우기</button>
+        <button type="button" class="btn btn-primary" id="download-all" disabled>모두 내려받기</button>
+      </div>
+    </div>
+    <ul class="files" id="files"></ul>
+  </section>
+
+  <section class="info">
+    <h2>지원 형식</h2>
+    <dl>
+      <dt>넣을 수 있는 형식</dt>
+      <dd>JPEG, PNG, GIF, WebP, BMP, ICO, SVG, AVIF와 그 밖에 이 브라우저가 열 수 있는 모든 이미지. Safari에서는 HEIC도 됩니다. 애니메이션은 첫 프레임만 쓰입니다.</dd>
+      <dt>만들 수 있는 형식</dt>
+      <dd>PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG. WebP와 AVIF 저장은 브라우저 지원에 따라 달라지며, 안 되면 목록에서 비활성으로 표시됩니다.</dd>
+      <dt>그 밖에</dt>
+      <dd>사진의 회전 정보(EXIF)는 반영한 뒤 제거됩니다. 변환 결과에는 메타데이터가 남지 않습니다. 휴대전화에서는 홈 화면에 추가해 앱처럼 쓸 수 있고, 한 번 연 뒤에는 오프라인에서도 동작합니다.</dd>
+    </dl>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="foot-links">
+    <span>© <span id="year"></span> noodles97</span>
+    <a href="https://github.com/noodles97/noodles97.github.io/tree/main/image-converter" rel="noopener">소스 보기 (GitHub)</a>
+  </div>
+  <a class="donate donate-small" href="https://buymeacoffee.com/noodles97" rel="noopener">커피 한 잔 후원하기</a>
+</footer>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
