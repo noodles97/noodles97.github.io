@@ -5,6 +5,7 @@ baseurl: ""
 lang: ko
 timezone: Asia/Seoul
 permalink: /blog/:year/:month/:day/:title/
+donate_url: https://buymeacoffee.com/noodles97
 markdown: kramdown
 plugins:
   - jekyll-feed

@@ -33,7 +33,8 @@ h1,h2,h3{line-height:1.25;text-wrap:balance;margin:0}
 .card-main span{font-size:14px;color:var(--fg-muted)}
 .card-repo{font-size:13px;padding:8px 16px;border-top:1px solid var(--line);text-decoration:none}
 .posts{list-style:none;margin:0;padding:0;display:grid}
-.posts li{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.posts li{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:10px 0}
+.posts li+li{border-top:1px solid var(--line)}
 .posts a{color:var(--fg);text-decoration:none;font-weight:500}
 .posts a:hover{color:var(--accent)}
 .posts time{color:var(--fg-muted);font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -56,5 +57,8 @@ h1,h2,h3{line-height:1.25;text-wrap:balance;margin:0}
 .prose table{border-collapse:collapse;width:100%;font-size:15px}
 .prose th,.prose td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
 .back{margin:0}
+.donate-box{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px;color:var(--fg-muted)}
+.donate{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:6px;background:var(--accent);color:#fff;font-weight:600;text-decoration:none;white-space:nowrap}
+.donate:hover{filter:brightness(1.08)}
 .site-foot{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13.5px;color:var(--fg-muted);border-top:1px solid var(--line);padding-top:14px}
 .site-foot a{color:var(--fg-muted)}
