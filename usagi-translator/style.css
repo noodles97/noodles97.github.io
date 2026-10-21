@@ -105,3 +105,7 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin:0 
 .reading{margin:0;font-size:13.5px;color:var(--fg-muted);white-space:pre-wrap;word-break:break-all;border-top:1px dashed var(--line);padding-top:8px}
 .reading[hidden]{display:none}
 .reading b{color:var(--fg);font-weight:600;margin-right:4px}
+
+/* 휴대전화에서는 푸터가 한 줄에 들어가도록 짧게 */
+.src-short{display:none}
+@media (max-width:480px){.src-long{display:none}.src-short{display:inline}}
