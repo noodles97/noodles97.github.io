@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+{% seo %}
+{% feed_meta %}
+<meta name="theme-color" content="#28499a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+<div class="page">
+<header class="site-head">
+  <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+  <nav class="nav" aria-label="주 메뉴">
+    <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>홈</a>
+    <a href="{{ '/blog/' | relative_url }}"{% if page.url contains '/blog' %} aria-current="page"{% endif %}>블로그</a>
+    <a href="{{ '/apps/' | relative_url }}"{% if page.url == '/apps/' %} aria-current="page"{% endif %}>앱</a>
+  </nav>
+</header>
+<main class="content">
+{{ content }}
+</main>
+<footer class="site-foot">
+  <span>© {{ site.time | date: "%Y" }} {{ site.title }}</span>
+  <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+  <a href="https://github.com/noodles97" rel="noopener">GitHub</a>
+</footer>
+</div>
+</body>
+</html>

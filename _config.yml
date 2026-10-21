@@ -1,0 +1,15 @@
+title: noodles97
+description: 브라우저에서 바로 쓰는 작은 도구를 만들고, 가끔 글을 씁니다.
+url: "https://noodles97.github.io"
+baseurl: ""
+lang: ko
+timezone: Asia/Seoul
+permalink: /blog/:year/:month/:day/:title/
+markdown: kramdown
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+feed:
+  path: feed.xml
+exclude:
+  - README.md
