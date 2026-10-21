@@ -41,9 +41,16 @@ function render() {
       if (script() === 'ja') { reading = encode(text, 'ko'); readingLabel = '한글로 읽기'; }
     } else if (cipher) {
       const d = decode(text);
-      result = d.text;
-      if (d.unknown) warn = `우사기어가 아닌 글자 ${d.unknown}개는 그대로 두었습니다.`;
-      if (hasKana) { reading = d.unknown ? readUsagi(text) : encode(result, 'ko'); readingLabel = '입력을 한글로 읽기'; }
+      if (d.unknownUsagi && d.unknownUsagi >= d.matched) {
+        // 암호로 풀린 글자보다 못 푼 우사기 말이 많으면 회화 말로 보고 사전으로 풀어 줍니다
+        const g = gloss(text); result = g.text; used = g.used;
+        warn = used.length ? '암호가 아니라서 회화 사전으로 풀었습니다. 회화 모드로 바꾸면 같은 결과를 볼 수 있습니다.' : '암호 소리도, 사전에 있는 우사기 말도 아니라서 그대로 두었습니다.';
+        if (hasKana) { reading = readUsagi(text); readingLabel = '입력을 한글로 읽기'; }
+      } else {
+        result = d.text;
+        if (d.unknown) warn = `우사기어가 아닌 글자 ${d.unknown}개는 그대로 두었습니다.`;
+        if (hasKana) { reading = d.unknown ? readUsagi(text) : encode(result, 'ko'); readingLabel = '입력을 한글로 읽기'; }
+      }
     } else if (encoding) {
       result = speak(text, script());
       if (script() === 'ja') { reading = speak(text, 'ko'); readingLabel = '한글로 읽기'; }
