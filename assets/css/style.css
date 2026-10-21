@@ -62,3 +62,4 @@ h1,h2,h3{line-height:1.25;text-wrap:balance;margin:0}
 .site-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;font-size:13.5px;color:var(--fg-muted);border-top:1px solid var(--line);padding-top:14px}
 .foot-links{display:flex;flex-wrap:wrap;gap:8px 16px}
 .site-foot a{color:var(--fg-muted)}
+.site-foot a.donate{color:#fff}
