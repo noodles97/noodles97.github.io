@@ -1,4 +1,4 @@
-import { encode, decode, speak, gloss, GLOSSARY, TABLES, CHO_NAMES, JUNG_NAMES, JONG_NAMES } from './usagi.js';
+import { encode, decode, speak, gloss, readUsagi, GLOSSARY, TABLES, CHO_NAMES, JUNG_NAMES, JONG_NAMES } from './usagi.js';
 
 const $ = (id) => document.getElementById(id);
 const src = $('src'), out = $('out'), note = $('note'), glossBox = $('gloss');
@@ -32,15 +32,29 @@ function render() {
   let result = '';
   let warn = '';
   let used = [];
+  let reading = ''; // 일본어 표기를 한글로 읽은 것
+  let readingLabel = '';
+  const hasKana = /[\u3041-\u30ff]/.test(text);
   if (text) {
-    if (cipher && encoding) result = encode(text, script());
-    else if (cipher) {
+    if (cipher && encoding) {
+      result = encode(text, script());
+      if (script() === 'ja') { reading = encode(text, 'ko'); readingLabel = '한글로 읽기'; }
+    } else if (cipher) {
       const d = decode(text);
       result = d.text;
       if (d.unknown) warn = `우사기어가 아닌 글자 ${d.unknown}개는 그대로 두었습니다.`;
-    } else if (encoding) result = speak(text, script());
-    else { const g = gloss(text); result = g.text; used = g.used; }
+      if (hasKana) { reading = d.unknown ? readUsagi(text) : encode(result, 'ko'); readingLabel = '입력을 한글로 읽기'; }
+    } else if (encoding) {
+      result = speak(text, script());
+      if (script() === 'ja') { reading = speak(text, 'ko'); readingLabel = '한글로 읽기'; }
+    } else {
+      const g = gloss(text); result = g.text; used = g.used;
+      if (hasKana) { reading = readUsagi(text); readingLabel = '입력을 한글로 읽기'; }
+    }
   }
+  $('reading').hidden = !reading;
+  $('reading-label').textContent = readingLabel;
+  $('reading-text').textContent = reading;
   out.value = result;
   $('out-count').textContent = result ? `${[...result].length}자` : '';
   if (!noteTimer) setNote(warn, warn ? 'is-warn' : '');

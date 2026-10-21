@@ -102,3 +102,6 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin:0 
 .sources a{color:var(--fg-muted)}
 @media (max-width:480px){.dict td:first-child{white-space:normal}}
 .dict-sub th{padding-top:14px;font-size:13.5px;color:var(--fg-muted);border-bottom:1px solid var(--line)}
+.reading{margin:0;font-size:13.5px;color:var(--fg-muted);white-space:pre-wrap;word-break:break-all;border-top:1px dashed var(--line);padding-top:8px}
+.reading[hidden]{display:none}
+.reading b{color:var(--fg);font-weight:600;margin-right:4px}

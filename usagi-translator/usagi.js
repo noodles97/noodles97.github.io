@@ -6,6 +6,8 @@
 //    한글이 아닌 글자는 「뿌」 뒤에 코드값을 16진수 소리로 적습니다. 띄어쓰기는 「!」로, 원래 있던 「!」는 「！」로 적습니다.
 // 2) 회화 모드 (speak / gloss): 팬들이 정리한 우사기어 사전으로 뜻을 옮깁니다. 되돌릴 수 없는 대신 진짜 우사기 말처럼 보입니다.
 
+import { kanaToHangul } from './kana.js';
+
 // ---------- 암호 모드 토큰표 ----------
 // [한글 표기, 가타카나 표기]. 자주 쓰는 자모에 짧은 소리를 줬습니다.
 const CHO = [ // ㄱ ㄲ ㄴ ㄷ ㄸ ㄹ ㅁ ㅂ ㅃ ㅅ ㅆ ㅇ ㅈ ㅉ ㅊ ㅋ ㅌ ㅍ ㅎ
@@ -311,6 +313,23 @@ function lookupWords(ws) {
     if (score > bestScore) { best = e; bestScore = score; }
   }
   return best ? { entry: best, head: parts[0][1], tail: parts[parts.length - 1][3] } : null;
+}
+
+// 가나로 적힌 우사기어를 한글로 읽어 줍니다. 사전에 있는 말은 사전의 한글 표기로, 나머지는 일반 읽기 규칙으로.
+export function readUsagi(text) {
+  const words = text.replace(/([?？!！])(?=[\p{L}])/gu, '$1 ').split(/(\s+)/u);
+  const out = [];
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    if (!w || /^\s+$/u.test(w)) { out.push(w); continue; }
+    let hit = null;
+    if (i + 2 < words.length && /^\s+$/u.test(words[i + 1])) hit = lookupWords([w, words[i + 2]]);
+    if (hit) { out.push(hit.head + hit.entry.ko + hit.tail.replace(/^[?？!！]+/, '')); i += 2; continue; }
+    hit = lookupWords([w]);
+    if (hit) { out.push(hit.head + hit.entry.ko + (/[?!~]$/.test(hit.entry.ko) ? hit.tail.replace(/^[?？!！~～]+/, '') : hit.tail)); continue; }
+    out.push(kanaToHangul(w));
+  }
+  return out.join('').replace(/[？！]/g, (c) => (c === '？' ? '?' : '!'));
 }
 
 // 표기 차이를 없앱니다: 가나 → 한글, 받침 ㅅ과 ッ은 무시, 푸/프/부 → 푸, 길게 끈 소리는 두 번까지만, 끝의 긴소리 표시는 뺌.
