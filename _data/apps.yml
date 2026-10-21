@@ -9,4 +9,4 @@
 - name: 우사기 번역기
   url: https://noodles97.github.io/usagi-translator/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/usagi-translator
-  description: 한국어를 우사기 말로 바꾸고 다시 한국어로 되돌립니다. 우라, 하?, 야하, 프루랴. 번역한 글은 링크로 보내 친구가 풀어 볼 수 있습니다.
+  description: 한국어를 우사기 말로 바꾸고 다시 한국어로 되돌립니다. 우라, 하아?, 야하, 푸루야. 인공지능 없이 규칙만으로 양방향 번역하고, 팬 사전으로 뜻도 옮깁니다.

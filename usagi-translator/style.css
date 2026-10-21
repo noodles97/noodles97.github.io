@@ -83,3 +83,21 @@ input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin:0 
 .site-foot a.donate{color:#fff}
 .donate{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:6px;background:var(--accent);color:#fff;font-weight:500;font-size:13px;text-decoration:none;white-space:nowrap}
 .donate:hover{filter:brightness(1.08)}
+
+.mode-hint{margin:-4px 0 0;font-size:13.5px;color:var(--fg-muted)}
+.gloss{display:grid;gap:8px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.gloss[hidden]{display:none}
+.gloss h3{font-size:14px;font-weight:600}
+.gloss ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.gloss li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:14px}
+.gloss li small{flex-basis:100%;color:var(--fg-muted);font-size:12.5px}
+.ja{color:var(--fg-muted);font-size:.9em}
+.meaning{color:var(--fg)}
+.dict{border-collapse:collapse;width:100%;font-size:14px}
+.dict th{text-align:left;font-weight:600;color:var(--fg);padding:4px 6px;border-bottom:2px solid var(--line)}
+.dict td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+.dict td:first-child{white-space:nowrap;color:var(--fg)}
+.dict td:nth-child(2){color:var(--fg);min-width:7em}
+.sources{font-size:13px}
+.sources a{color:var(--fg-muted)}
+@media (max-width:480px){.dict td:first-child{white-space:normal}}

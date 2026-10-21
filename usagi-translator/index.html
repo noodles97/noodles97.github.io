@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>우사기 번역기 · noodles97</title>
-<meta name="description" content="한국어를 우사기 말로 바꾸고, 우사기 말을 다시 한국어로 되돌리는 번역기. 우라, 하?, 야하, 프루랴. 번역한 글은 링크로 보내 친구가 풀어 볼 수 있습니다.">
+<meta name="description" content="한국어를 우사기 말로 바꾸고, 우사기 말을 다시 한국어로 되돌리는 번역기. 우라, 하아?, 야하, 푸루야. 인공지능 없이 규칙만으로 양방향 번역하고, 번역한 글은 링크로 보내 친구가 풀어 볼 수 있습니다.">
 <meta name="theme-color" content="#28499a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="우사기 번역기">
 <meta property="og:title" content="우사기 번역기">
-<meta property="og:description" content="한국어를 우사기 말로, 우사기 말을 다시 한국어로. 우라, 하?, 야하, 프루랴.">
+<meta property="og:description" content="한국어를 우사기 말로, 우사기 말을 다시 한국어로. 우라, 하아?, 야하, 푸루야.">
 <meta property="og:image" content="https://noodles97.github.io/usagi-translator/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,22 +29,27 @@
 <main class="content">
   <section class="hero">
     <h1 class="page-title">우사기 번역기</h1>
-    <p class="lead">한국어를 우사기 말로 바꾸고, 우사기 말을 다시 한국어로 되돌립니다. 글자마다 소리가 정해져 있어서 번역한 글은 그대로 풀립니다. 링크로 보내면 받은 사람이 바로 읽을 수 있습니다.</p>
+    <p class="lead">한국어를 우사기 말로 바꾸고, 우사기 말을 다시 한국어로 되돌립니다. 인공지능 없이 규칙만으로 돌아갑니다. 암호 모드는 글자마다 소리가 정해져 있어 그대로 풀리고, 회화 모드는 팬들이 정리한 우사기어 사전으로 뜻을 옮깁니다.</p>
   </section>
 
   <section class="translator" aria-label="번역">
     <div class="dir-bar">
+      <div class="seg" role="radiogroup" aria-label="모드">
+        <label><input type="radio" name="mode" value="cipher" checked><span>암호</span></label>
+        <label><input type="radio" name="mode" value="talk"><span>회화</span></label>
+      </div>
       <div class="seg" role="radiogroup" aria-label="번역 방향">
         <label><input type="radio" name="dir" value="encode" checked><span>한국어 → 우사기어</span></label>
         <label><input type="radio" name="dir" value="decode"><span>우사기어 → 한국어</span></label>
       </div>
       <button type="button" class="btn btn-small" id="swap" title="결과를 입력으로 옮기고 방향을 바꿉니다">↔ 바꾸기</button>
     </div>
+    <p class="mode-hint" id="mode-hint"></p>
 
     <div class="panes">
       <div class="pane">
         <div class="pane-head"><label for="src" id="src-label">한국어</label><span class="count" id="src-count">0자</span></div>
-        <textarea id="src" rows="5" placeholder="여기에 쓰면 바로 바뀝니다. 예: 하, 우르르르, 부르르르, 하." autocomplete="off" spellcheck="false"></textarea>
+        <textarea id="src" rows="5" placeholder="" autocomplete="off" spellcheck="false"></textarea>
         <div class="pane-foot">
           <button type="button" class="btn btn-small" id="sample">예시 넣기</button>
           <button type="button" class="btn btn-small" id="clear">지우기</button>
@@ -52,7 +57,7 @@
       </div>
       <div class="pane pane-out">
         <div class="pane-head"><label for="out" id="out-label">우사기어</label><span class="count" id="out-count"></span></div>
-        <textarea id="out" rows="5" readonly placeholder="우라 하? 야하 프루랴" aria-live="polite"></textarea>
+        <textarea id="out" rows="5" readonly placeholder="우라 하? 야하 푸루야" aria-live="polite"></textarea>
         <div class="pane-foot">
           <p class="note" id="note"></p>
           <div class="actions">
@@ -63,7 +68,9 @@
       </div>
     </div>
 
-    <div class="opts" id="opts">
+    <div class="gloss" id="gloss" hidden></div>
+
+    <div class="opts" id="opt-script">
       <div class="opt">
         <span class="opt-label">표기</span>
         <div class="seg seg-small" role="radiogroup" aria-label="표기">
@@ -71,15 +78,23 @@
           <label><input type="radio" name="script" value="ja"><span>가타카나 (ウラ ハ?)</span></label>
         </div>
       </div>
-      <label class="opt check"><input type="checkbox" id="vibe"> 흉내 모드 <small>(느낌만 살리고 뜻은 버립니다. 되돌릴 수 없음)</small></label>
     </div>
   </section>
 
   <details class="info">
-    <summary>어떻게 바꾸나요?</summary>
+    <summary>우사기어 사전 (회화 모드)</summary>
     <div class="info-body">
-      <p>한글 한 글자를 초성·중성·종성으로 나누고, 각각을 우사기 소리로 바꿉니다. 초성은 <b>우</b>로, 중성은 <b>하</b>나 <b>야</b>로, 받침은 <b>프·푸·부</b>로 시작하기 때문에 어디서 글자가 끊기는지 알 수 있고, 그래서 다시 한국어로 풀 수 있습니다. 예를 들어 <b>안</b>은 ㅇ+ㅏ+ㄴ이라 <b>우</b>+<b>하</b>+<b>프</b>, 즉 <b>우하프</b>가 됩니다.</p>
-      <p>로마자, 숫자, 가나, 한자처럼 한글이 아닌 글자는 <b>뿌</b> 뒤에 글자 번호를 적습니다. 띄어쓰기, 문장 부호, 이모지는 그대로 둡니다. 가타카나 표기는 같은 규칙을 일본어 글자로 적은 것이라 두 표기가 섞여 있어도 풀립니다.</p>
+      <p>우사기는 뜻이 있는 말을 하지 않고 「ウラ」「ヤハ」「ハァ？」 같은 소리만 냅니다. 공식 설정에는 뜻이 없어서, 팬들이 장면을 보고 정리한 해석을 모았습니다. 자료마다 조금씩 달라서 여러 곳에서 겹치는 해석을 골랐습니다. 회화 모드는 이 사전에 맞는 말은 사전대로, 나머지 말은 추임새로 바꿉니다.</p>
+      <table class="dict"><thead><tr><th>우사기 말</th><th>뜻</th><th>쓰는 때</th></tr></thead><tbody id="dict"></tbody></table>
+      <p class="sources">참고한 곳: <a href="https://gall.dcinside.com/mgallery/board/view/?id=nongdamgom&amp;no=11608" rel="noopener">우사기어 정리 (농담곰 갤러리)</a>, <a href="https://namu.wiki/w/%ED%86%A0%EB%81%BC(%EB%A8%BC%EC%9E%91%EA%B7%80)" rel="noopener">토끼 (나무위키)</a>, <a href="https://chiikawa.fandom.com/ko/wiki/%ED%86%A0%EB%81%BC" rel="noopener">토끼 (치이카와 위키)</a>, <a href="https://chiikawa.hatenablog.jp/entry/character/%E3%81%86%E3%81%95%E3%81%8E/%E5%A5%87%E5%A3%B0%E9%9B%86" rel="noopener">うさぎの奇声 まとめ</a>, <a href="https://chiikawa.hatenablog.jp/entry/2021/12/03/143810" rel="noopener">うさぎの口癖 まとめ</a>, <a href="https://manga-game.com/tiikawa-usagi/" rel="noopener">うさぎ語ハァ？の意味</a>, <a href="https://kiki710.hatenablog.com/entry/2025/11/20/155519" rel="noopener">ヤハ・ウラ・ハァ？の意味</a>, <a href="https://chiikawabiyori.com/articles/chiikawa-usagi-personality-language-mystery" rel="noopener">うさぎの言語</a>, <a href="https://ponblog.xyz/chiikawa-usagi-syntax/" rel="noopener">うさぎ構文まとめ</a>, <a href="https://github.com/wrobobear/Chiikawa_usagi_language" rel="noopener">Chiikawa usagi language (GitHub)</a>.</p>
+    </div>
+  </details>
+
+  <details class="info">
+    <summary>암호 모드 규칙 (소리표)</summary>
+    <div class="info-body">
+      <p>한글 한 글자를 초성·중성·종성으로 나누고, 각각을 우사기 소리로 바꿉니다. 초성은 <b>우라</b> 계열, 중성은 <b>하아?</b>·<b>야하</b> 계열, 받침은 <b>푸루야</b>·<b>후응</b>·<b>프루루</b> 계열이라 어디서 글자가 끊기는지 알 수 있고, 그래서 다시 한국어로 풀 수 있습니다. 예를 들어 <b>안</b>은 ㅇ+ㅏ+ㄴ이라 <b>우 하 푸루야</b>가 됩니다.</p>
+      <p>말과 말 사이의 띄어쓰기는 <b>!</b>로 적고(원래 있던 느낌표는 전각 <b>！</b>로), 로마자·숫자·가나·한자처럼 한글이 아닌 글자는 <b>뿌</b> 뒤에 글자 번호를 적습니다. 문장 부호와 이모지는 그대로 둡니다. 가타카나 표기는 같은 규칙을 일본어 글자로 적은 것이라 두 표기가 섞여 있어도 풀립니다.</p>
       <div class="tables" id="tables"></div>
       <p>번역은 전부 이 브라우저 안에서 끝나고, 입력한 글은 어디로도 전송되지 않습니다. 링크 공유는 번역된 글을 주소 뒤에 붙이는 방식입니다.</p>
     </div>
