@@ -6,3 +6,7 @@
   url: https://noodles97.github.io/direct-import-calc/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc
   description: 국내 구매와 해외 직구 총비용을 환율, 배송비, 면세 한도, 관세, 부가세, 카드 수수료까지 넣어 비교합니다. 휴대전화 홈 화면에 추가해 앱처럼 쓸 수 있습니다.
+- name: 우사기 번역기
+  url: https://noodles97.github.io/usagi-translator/
+  repo: https://github.com/noodles97/noodles97.github.io/tree/main/usagi-translator
+  description: 한국어를 우사기 말로 바꾸고 다시 한국어로 되돌립니다. 우라, 하아?, 야하, 푸루야. 인공지능 없이 규칙만으로 양방향 번역하고, 팬 사전으로 뜻도 옮깁니다.
