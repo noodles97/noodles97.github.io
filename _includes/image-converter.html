@@ -1,0 +1,159 @@
+{%- comment -%}
+이미지 변환기 페이지 템플릿. image-converter/index.html (ko) 과 image-converter/en/index.html (en) 이 이 파일을 include 합니다.
+문구는 _data/image_converter.yml 에서 page.lang 에 맞는 것을 씁니다. 자산 경로는 두 페이지에서 같이 쓰도록 절대 경로입니다.
+{%- endcomment -%}
+{%- assign lang = page.lang | default: site.lang -%}
+{%- assign s = site.data.image_converter[lang] -%}
+{%- assign t = s.page -%}
+{%- assign site_t = site.data.i18n[lang] -%}
+{%- if lang == 'en' %}{% assign other = 'ko' %}{% else %}{% assign other = 'en' %}{% endif -%}
+{%- capture alt_url %}{% include alt-url.html %}{% endcapture -%}
+{%- assign base = '/image-converter/' -%}
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{ t.doc_title }}</title>
+<meta name="description" content="{{ t.description }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+{%- if alt_url != '' %}
+<link rel="alternate" hreflang="{{ lang }}" href="{{ page.url | absolute_url }}">
+<link rel="alternate" hreflang="{{ other }}" href="{{ alt_url | absolute_url }}">
+{%- endif %}
+<meta name="theme-color" content="#28499a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="{{ base }}icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ base }}apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="{{ t.short_title }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="{{ base }}style.css">
+<script>window.IC_STRINGS = {{ s.js | jsonify }};</script>
+</head>
+<body>
+<div class="page">
+<header class="site-head">
+  <a class="brand" href="{{ site_t.prefix | append: '/' | relative_url }}">noodles97</a>
+  <nav class="nav" aria-label="{{ t.nav_label }}">
+    <a href="{{ site_t.prefix | append: '/apps/' | relative_url }}">{{ t.nav_apps }}</a>
+    <a href="{{ site_t.prefix | append: '/blog/' | relative_url }}">{{ t.nav_blog }}</a>
+    {% include lang-switch.html %}
+  </nav>
+</header>
+
+<main class="content">
+  <section class="hero">
+    <h1 class="page-title">{{ t.title }}</h1>
+    <p class="lead">{{ t.lead }}</p>
+  </section>
+
+  <label class="drop" id="drop" for="file-input">
+    <input id="file-input" type="file" multiple accept="image/*,.heic,.heif,.avif,.tif,.tiff,.svg,.ico,.bmp,.jxl">
+    <span class="drop-title">{{ t.drop_title }}</span>
+    <span class="drop-sub">{{ t.drop_sub }}</span>
+  </label>
+
+  <form class="settings" id="settings" autocomplete="off">
+    <div class="field">
+      <label for="format">{{ t.format }}</label>
+      <select id="format" name="format">
+        <option value="png">PNG</option>
+        <option value="jpeg">JPEG</option>
+        <option value="webp">WebP</option>
+        <option value="avif">AVIF</option>
+        <option value="gif">GIF</option>
+        <option value="bmp">BMP</option>
+        <option value="tiff">TIFF</option>
+        <option value="ico">{{ t.opt_ico }}</option>
+        <option value="pdf">PDF</option>
+        <option value="svg">{{ t.opt_svg }}</option>
+      </select>
+    </div>
+    <div class="field" data-for="quality">
+      <label for="quality">{{ t.quality }} <output id="quality-out">85</output></label>
+      <input id="quality" name="quality" type="range" min="1" max="100" value="85">
+    </div>
+    <div class="field">
+      <label for="resize">{{ t.resize }}</label>
+      <div class="row">
+        <select id="resize" name="resize">
+          <option value="none">{{ t.resize_none }}</option>
+          <option value="long">{{ t.resize_long }}</option>
+          <option value="width">{{ t.resize_width }}</option>
+          <option value="height">{{ t.resize_height }}</option>
+          <option value="percent">{{ t.resize_percent }}</option>
+        </select>
+        <input id="resize-value" name="resizeValue" type="number" min="1" step="1" value="1920" hidden aria-label="{{ t.resize_value }}">
+      </div>
+    </div>
+    <div class="field check" data-for="upscale">
+      <label><input id="upscale" name="upscale" type="checkbox"> {{ t.upscale }}</label>
+    </div>
+    <div class="field" data-for="background">
+      <label for="background">{{ t.background }} <small>{{ t.background_note }}</small></label>
+      <div class="row"><input id="background" name="background" type="color" value="#ffffff"><code id="background-out">#ffffff</code></div>
+    </div>
+    <div class="field check" data-for="dither">
+      <label><input id="dither" name="dither" type="checkbox" checked> {{ t.dither }}</label>
+    </div>
+    <div class="field" data-for="pdfPage">
+      <label for="pdf-page">{{ t.pdf_page }}</label>
+      <select id="pdf-page" name="pdfPage">
+        <option value="image">{{ t.pdf_image }}</option>
+        <option value="a4">{{ t.pdf_a4 }}</option>
+        <option value="letter">{{ t.pdf_letter }}</option>
+      </select>
+    </div>
+    <div class="field wide" data-for="icoSizes">
+      <span class="label">{{ t.ico_sizes }}</span>
+      <div class="chips" id="ico-sizes">
+        <label><input type="checkbox" name="icoSizes" value="16" checked> 16</label>
+        <label><input type="checkbox" name="icoSizes" value="24"> 24</label>
+        <label><input type="checkbox" name="icoSizes" value="32" checked> 32</label>
+        <label><input type="checkbox" name="icoSizes" value="48" checked> 48</label>
+        <label><input type="checkbox" name="icoSizes" value="64"> 64</label>
+        <label><input type="checkbox" name="icoSizes" value="128"> 128</label>
+        <label><input type="checkbox" name="icoSizes" value="256" checked> 256</label>
+      </div>
+    </div>
+    <p class="hint" id="format-hint"></p>
+  </form>
+
+  <section class="results" id="results" hidden>
+    <div class="results-head">
+      <p class="summary" id="summary"></p>
+      <div class="actions">
+        <button type="button" class="btn" id="clear">{{ t.clear }}</button>
+        <button type="button" class="btn btn-primary" id="download-all" disabled>{{ t.download_all }}</button>
+      </div>
+    </div>
+    <ul class="files" id="files"></ul>
+  </section>
+
+  <section class="info">
+    <h2>{{ t.info_title }}</h2>
+    <dl>
+      <dt>{{ t.info_in }}</dt>
+      <dd>{{ t.info_in_body }}</dd>
+      <dt>{{ t.info_out }}</dt>
+      <dd>{{ t.info_out_body }}</dd>
+      <dt>{{ t.info_etc }}</dt>
+      <dd>{{ t.info_etc_body }}</dd>
+    </dl>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="foot-links">
+    <span>© <span id="year"></span> noodles97</span>
+    <a href="https://github.com/noodles97/noodles97.github.io/tree/main/image-converter" rel="noopener" class="src">GitHub</a>
+  </div>
+  <a class="donate donate-small" href="https://buymeacoffee.com/noodles97" rel="noopener">{{ t.donate }}</a>
+</footer>
+</div>
+<script type="module" src="{{ base }}app.js"></script>
+</body>
+</html>

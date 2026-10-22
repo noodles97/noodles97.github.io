@@ -1,32 +1,18 @@
 ---
 layout: default
+ref: home
 ---
+{%- assign t = site.data.i18n[page.lang] %}
 <section class="hero">
-  <p class="lead">{{ site.description }}</p>
+  <p class="lead">{{ t.tagline }}</p>
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>앱</h2><a href="{{ '/apps/' | relative_url }}">전체 보기</a></div>
-  <ul class="cards">
-  {% for app in site.data.apps limit: 4 %}
-    <li class="card">
-      <a class="card-main" href="{{ app.url }}"><strong>{{ app.name }}</strong><span>{{ app.description }}</span></a>
-      {% if app.repo %}<a class="card-repo" href="{{ app.repo }}" rel="noopener">소스 보기 (GitHub)</a>{% endif %}
-    </li>
-  {% endfor %}
-  </ul>
+  <div class="section-head"><h2>{{ t.apps }}</h2><a href="{{ t.prefix | append: '/apps/' | relative_url }}">{{ t.view_all }}</a></div>
+  {% include app-cards.html limit=4 %}
 </section>
 
 <section class="section">
-  <div class="section-head"><h2>최근 글</h2><a href="{{ '/blog/' | relative_url }}">전체 보기</a></div>
-  {% if site.posts.size > 0 %}
-  <ul class="posts">
-  {% for post in site.posts limit: 5 %}
-    <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time></li>
-  {% endfor %}
-  </ul>
-  {% else %}
-  <p class="empty">아직 글이 없습니다.</p>
-  {% endif %}
+  <div class="section-head"><h2>{{ t.recent_posts }}</h2><a href="{{ t.prefix | append: '/blog/' | relative_url }}">{{ t.view_all }}</a></div>
+  {% include post-list.html limit=5 %}
 </section>
-

@@ -1,0 +1,41 @@
+# 사이트 공통 문자열. 글과 앱 설명은 각각 _posts/, _data/apps.yml 에 있습니다.
+ko:
+  name: 한국어
+  prefix: ""
+  tagline: 브라우저에서 바로 쓰는 작은 도구를 만들고, 가끔 글을 씁니다.
+  nav_label: 주 메뉴
+  home: 홈
+  blog: 블로그
+  apps: 앱
+  view_all: 전체 보기
+  recent_posts: 최근 글
+  no_posts: 아직 글이 없습니다.
+  apps_lead: 설치 없이 브라우저에서 바로 쓰는 작은 도구들입니다.
+  source: 소스 보기 (GitHub)
+  donate: 후원하기
+  back: 글 목록으로
+  read_in: 한국어로 읽기
+  switch_title: 한국어 페이지로
+  date_format: "%Y년 %-m월 %-d일"
+  list_date_format: "%Y.%m.%d"
+  feed: /feed.xml
+en:
+  name: English
+  prefix: /en
+  tagline: Small tools that run right in your browser, and the occasional post.
+  nav_label: Main menu
+  home: Home
+  blog: Blog
+  apps: Apps
+  view_all: View all
+  recent_posts: Recent posts
+  no_posts: No posts yet.
+  apps_lead: Small tools you can use right in your browser, nothing to install.
+  source: View source (GitHub)
+  donate: Buy me a coffee
+  back: Back to all posts
+  read_in: Read in English
+  switch_title: Switch to English
+  date_format: "%B %-d, %Y"
+  list_date_format: "%Y.%m.%d"
+  feed: /feed/en.xml
