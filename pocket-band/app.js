@@ -1,7 +1,8 @@
 // 포켓 밴드 시퀀서. 페이지 템플릿은 _includes/pocket-band.html, 문구는 아래 I18N. 언어는 <html lang> 을 따릅니다.
 (function(){
 'use strict';
-const STEPS_PER_BAR = 16, CELL_W = 26, ROW_H = 20, KEY_W = 64, RULER_H = 28;
+const COARSE = window.matchMedia && window.matchMedia('(pointer:coarse)').matches; // 터치 화면이면 칸을 키움
+const STEPS_PER_BAR = 16, CELL_W = COARSE ? 30 : 26, ROW_H = COARSE ? 24 : 20, KEY_W = 64, RULER_H = 28;
 const NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const BLACK = {1:1,3:1,6:1,8:1,10:1};
 const DRUMS = [{n:49},{n:51},{n:46},{n:42},{n:50},{n:45},{n:39},{n:38},{n:36}];
@@ -300,35 +301,63 @@ function afterEdit(){ drawNotes(); }
 
 // ---------- 트랙 레일 ----------
 const rail=$('rail');
+const MUTE_SVG=`<svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+          <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>`;
+function volrowHtml(i, idPrefix){
+  const st=state.tracks[i];
+  return `<span class="mute" role="button" tabindex="0" id="${idPrefix}mute-${TRACKS[i].id}" aria-pressed="${st.mute}" aria-label="${trackName(i)} ${t('mute')}" title="${st.mute? t('unmute') : t('mute')}">${MUTE_SVG}</span>
+        <input class="vol" type="range" min="0" max="1" step="0.01" value="${st.vol}" id="${idPrefix}vol-${TRACKS[i].id}" style="--pct:${Math.round(st.vol*100)}%" aria-label="${trackName(i)} ${t('volume')}">`;
+}
+// 음소거·볼륨은 카드와 폰용 믹서 두 곳에 있어서 한 함수로 같이 갱신
+function setMute(i,val){
+  state.tracks[i].mute=val;
+  document.querySelectorAll(`[id$="mute-${TRACKS[i].id}"]`).forEach(b=>{ b.setAttribute('aria-pressed',String(val)); b.title=val? t('unmute') : t('mute'); });
+  persist();
+}
+function setVol(i,val,final){
+  state.tracks[i].vol=val;
+  document.querySelectorAll(`[id$="vol-${TRACKS[i].id}"]`).forEach(v=>{ if(+v.value!==val) v.value=val; v.style.setProperty('--pct', Math.round(val*100)+'%'); });
+  if(actx && trackGains[i]) trackGains[i].gain.setTargetAtTime(val, actx.currentTime, .02);
+  if(final) persist();
+}
+function wireVolrow(root, getIndex){
+  const mute=root.querySelector('.mute'), vol=root.querySelector('.vol');
+  const toggle=()=>setMute(getIndex(), !state.tracks[getIndex()].mute);
+  mute.addEventListener('click', e=>{ e.stopPropagation(); toggle(); });
+  mute.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); toggle(); } });
+  vol.addEventListener('input', ()=>setVol(getIndex(), +vol.value, false));
+  vol.addEventListener('change', ()=>setVol(getIndex(), +vol.value, true));
+  vol.addEventListener('click', e=>e.stopPropagation());
+}
 function renderRail(){
   rail.innerHTML='';
   TRACKS.forEach((T,i)=>{
-    const st=state.tracks[i];
     const el=document.createElement('button'); el.type='button'; el.className='track'; el.style.setProperty('--tc',`var(${T.cssVar})`);
     el.setAttribute('aria-pressed', String(i===active)); el.id='track-'+T.id;
     el.innerHTML=`<span class="name"><span class="dot"></span>${trackName(i)}<span class="key" aria-hidden="true">${i+1}</span></span>
-      <span class="volrow">
-        <span class="mute" role="button" tabindex="0" id="mute-${T.id}" aria-pressed="${st.mute}" aria-label="${trackName(i)} ${t('mute')}" title="${st.mute? t('unmute') : t('mute')}">
-          <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>
-          <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
-        </span>
-        <input class="vol" type="range" min="0" max="1" step="0.01" value="${st.vol}" id="vol-${T.id}" style="--pct:${Math.round(st.vol*100)}%" aria-label="${trackName(i)} ${t('volume')}">
-      </span>`;
+      <span class="volrow">${volrowHtml(i,'')}</span>`;
     el.addEventListener('click', e=>{ if(e.target.closest('.mute')||e.target.closest('.vol')) return; selectTrack(i); });
-    const mute=el.querySelector('.mute');
-    const toggleMute=()=>{ st.mute=!st.mute; mute.setAttribute('aria-pressed',String(st.mute)); mute.title=st.mute? t('unmute') : t('mute'); persist(); };
-    mute.addEventListener('click', e=>{ e.stopPropagation(); toggleMute(); });
-    mute.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); e.stopPropagation(); toggleMute(); } });
-    const vol=el.querySelector('.vol');
-    vol.addEventListener('input', ()=>{ st.vol=+vol.value; vol.style.setProperty('--pct', Math.round(st.vol*100)+'%'); if(trackGains[i]) trackGains[i].gain.setTargetAtTime(st.vol, actx.currentTime, .02); });
-    vol.addEventListener('change', persist);
-    vol.addEventListener('click', e=>e.stopPropagation());
+    wireVolrow(el, ()=>i);
     rail.appendChild(el);
   });
+  const mixer=document.createElement('div'); mixer.className='mixer volrow'; mixer.id='mixer';
+  mixer.innerHTML=volrowHtml(active,'mixer-');
+  wireVolrow(mixer, ()=>active);
+  rail.appendChild(mixer);
+  updateMixer();
+}
+function updateMixer(){
+  const m=$('mixer'); if(!m) return;
+  const T=TRACKS[active], st=state.tracks[active];
+  m.style.setProperty('--tc',`var(${T.cssVar})`);
+  const mb=m.querySelector('.mute'), v=m.querySelector('.vol');
+  mb.id='mixer-mute-'+T.id; mb.setAttribute('aria-pressed',String(st.mute)); mb.setAttribute('aria-label',trackName(active)+' '+t('mute')); mb.title=st.mute? t('unmute') : t('mute');
+  v.id='mixer-vol-'+T.id; v.value=st.vol; v.style.setProperty('--pct',Math.round(st.vol*100)+'%'); v.setAttribute('aria-label',trackName(active)+' '+t('volume'));
 }
 function selectTrack(i){
   active=i;
   document.querySelectorAll('.track').forEach((el,j)=>el.setAttribute('aria-pressed',String(j===i)));
+  updateMixer();
   layout();
   const T=TRACKS[i]; let r = T.drum? 0 : pitchToRow(i, Math.round((T.low+T.high)/2)+6);
   const notes=state.tracks[i].notes; if(notes.length && !T.drum){ const avg=notes.reduce((a,n)=>a+n.p,0)/notes.length; r=pitchToRow(i,Math.round(avg)); }
