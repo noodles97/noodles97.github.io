@@ -16,3 +16,4 @@
 - **메뉴·소개 문구 같은 공통 문자열**: `_data/i18n.yml`.
 - **이미지 변환기**: 한국어 `/image-converter/`, 영어 `/image-converter/en/`. 화면은 `_includes/image-converter.html` 한 벌이고, 모든 문구(화면 글과 스크립트 안내문)는 `_data/image_converter.yml`에 두 언어로 들어 있습니다. 문구를 고칠 때는 이 파일만 고치면 되고, 화면 구조를 바꿀 때는 템플릿을 고칩니다.
 - **아스키 아트 변환기**: 한국어 `/ascii-art/`, 영어 `/ascii-art/en/`. 이미지 변환기와 같은 구조로, 화면은 `_includes/ascii-art.html`, 문구는 `_data/ascii_art.yml`, 스크립트와 스타일은 `ascii-art/` 폴더에 있습니다.
+- **포켓 밴드 시퀀서**: 한국어 `/pocket-band/`, 영어 `/pocket-band/en/`. 화면은 `_includes/pocket-band.html` 한 벌이고, 화면 문구는 `pocket-band/app.js` 맨 위의 `I18N`에 두 언어로 들어 있습니다. 스크립트가 `<html lang>`을 보고 언어를 고르므로 제목·설명 같은 head 문구만 템플릿에 있습니다.
