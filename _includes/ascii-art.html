@@ -1,0 +1,149 @@
+{%- comment -%}
+아스키 아트 변환기 페이지 템플릿. ascii-art/index.html (ko) 과 ascii-art/en/index.html (en) 이 이 파일을 include 합니다.
+문구는 _data/ascii_art.yml 에서 page.lang 에 맞는 것을 씁니다. 자산 경로는 두 페이지에서 같이 쓰도록 절대 경로입니다.
+{%- endcomment -%}
+{%- assign lang = page.lang | default: site.lang -%}
+{%- assign s = site.data.ascii_art[lang] -%}
+{%- assign t = s.page -%}
+{%- assign site_t = site.data.i18n[lang] -%}
+{%- if lang == 'en' %}{% assign other = 'ko' %}{% else %}{% assign other = 'en' %}{% endif -%}
+{%- capture alt_url %}{% include alt-url.html %}{% endcapture -%}
+{%- assign base = '/ascii-art/' -%}
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+{% include lang-redirect.html url=alt_url %}
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{ t.doc_title }}</title>
+<meta name="description" content="{{ t.description }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+{%- if alt_url != '' %}
+<link rel="alternate" hreflang="{{ lang }}" href="{{ page.url | absolute_url }}">
+<link rel="alternate" hreflang="{{ other }}" href="{{ alt_url | absolute_url }}">
+{%- endif %}
+<meta name="theme-color" content="#28499a">
+<link rel="icon" href="{{ base }}icon.svg" type="image/svg+xml">
+{% include analytics.html %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="{{ base }}style.css">
+<script>window.AA_STRINGS = {{ s.js | jsonify }};</script>
+</head>
+<body>
+<div class="page">
+<header class="site-head">
+  <a class="brand" href="{{ site_t.prefix | append: '/' | relative_url }}">noodles97</a>
+  <nav class="nav" aria-label="{{ t.nav_label }}">
+    <a href="{{ site_t.prefix | append: '/apps/' | relative_url }}">{{ t.nav_apps }}</a>
+    <a href="{{ site_t.prefix | append: '/blog/' | relative_url }}">{{ t.nav_blog }}</a>
+    {% include lang-switch.html %}
+  </nav>
+</header>
+
+<main class="content">
+  <section class="hero">
+    <h1 class="page-title">{{ t.title }}</h1>
+    <p class="lead">{{ t.lead }}</p>
+  </section>
+
+  <div class="app">
+    <section class="panel" aria-label="{{ t.output }}">
+      <div class="modes" role="group">
+        <button type="button" id="mode-image" aria-pressed="true">{{ t.mode_image }}</button>
+        <button type="button" id="mode-text" aria-pressed="false">{{ t.mode_text }}</button>
+      </div>
+
+      <div id="image-fields" class="field">
+        <label class="drop" id="drop" for="file">
+          <strong>{{ t.drop_title }}</strong>
+          <small>{{ t.drop_sub }}</small>
+          <input type="file" id="file" accept="image/*">
+        </label>
+        <div class="thumb"><img id="thumb" alt=""><span id="thumb-name">{{ t.sample_name }}</span></div>
+      </div>
+
+      <div id="text-fields" class="field" hidden>
+        <label for="text">{{ t.text_label }}</label>
+        <textarea id="text" rows="2">{{ t.text_default }}</textarea>
+        <label for="font" class="gap-top">{{ t.font }}</label>
+        <select id="font">
+          <option value="sans">{{ t.font_sans }}</option>
+          <option value="display">{{ t.font_display }}</option>
+          <option value="serif">{{ t.font_serif }}</option>
+          <option value="mono">{{ t.font_mono }}</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="cols"><span>{{ t.columns }}</span><output id="cols-out">100</output></label>
+        <input type="range" id="cols" min="20" max="240" step="2" value="100">
+      </div>
+
+      <div class="field">
+        <label for="charset">{{ t.charset }}</label>
+        <select id="charset">
+          <option value="standard" selected>{{ t.cs_standard }}</option>
+          <option value="dense">{{ t.cs_dense }}</option>
+          <option value="blocks">{{ t.cs_blocks }}</option>
+          <option value="dots">{{ t.cs_dots }}</option>
+          <option value="custom">{{ t.cs_custom }}</option>
+        </select>
+        <input type="text" id="custom" hidden placeholder="{{ t.custom_placeholder }}" spellcheck="false">
+      </div>
+
+      <div class="field">
+        <label for="contrast"><span>{{ t.contrast }}</span><output id="contrast-out">1.0</output></label>
+        <input type="range" id="contrast" min="0.4" max="3" step="0.1" value="1">
+      </div>
+
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="invert"><span>{{ t.invert }}</span></label>
+        <label class="check"><input type="checkbox" id="color"><span>{{ t.color }}</span></label>
+      </div>
+    </section>
+
+    <section class="output" aria-label="{{ t.output }}">
+      <div class="outbar">
+        <h2>{{ t.output }}</h2>
+        <span class="stats" id="stats"></span>
+        <button type="button" class="btn btn-primary" id="copy">{{ t.copy }}</button>
+      </div>
+      <div class="term" id="term">
+        <span class="sample" id="sample-tag">{{ t.sample_tag }}</span>
+        <pre id="out" tabindex="0"></pre>
+      </div>
+      <div class="sizebar">
+        <label for="fsize">{{ t.out_size }}</label>
+        <input type="range" id="fsize" min="3" max="18" step="0.5" value="8">
+        <output id="fsize-out">8px</output>
+      </div>
+      <div class="toast" id="toast" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <section class="info">
+    <h2>{{ t.about_title }}</h2>
+    <p>{{ t.about_lead }}</p>
+    <ul>
+      <li>{{ t.about_image }}</li>
+      <li>{{ t.about_text }}</li>
+      <li>{{ t.about_charset }}</li>
+      <li>{{ t.about_invert }}</li>
+    </ul>
+    <p>{{ t.about_how }}</p>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="foot-links">
+    <span>© <span id="year"></span> noodles97</span>
+    <a href="https://github.com/noodles97/noodles97.github.io/tree/main/ascii-art" rel="noopener" class="src">GitHub</a>
+  </div>
+  <a class="donate donate-small" href="https://buymeacoffee.com/noodles97" rel="noopener">{{ t.donate }}</a>
+</footer>
+</div>
+<script src="{{ base }}app.js"></script>
+</body>
+</html>

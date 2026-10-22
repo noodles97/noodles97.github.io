@@ -7,6 +7,13 @@
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/image-converter
   description: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG로 바꾸고 크기도 줄입니다. 파일이 서버로 올라가지 않고 브라우저 안에서만 처리됩니다.
   description_en: Convert images to PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF or SVG and resize them. Nothing is uploaded. Everything happens inside your browser.
+- name: 아스키 아트 변환기
+  name_en: ASCII Art Converter
+  url: https://noodles97.github.io/ascii-art/
+  url_en: https://noodles97.github.io/ascii-art/en/
+  repo: https://github.com/noodles97/noodles97.github.io/tree/main/ascii-art
+  description: 이미지나 글자를 문자만으로 그린 그림(ASCII 아트)으로 바꿉니다. 한글 글자도 배너로 만들 수 있고, 결과는 복사해서 어디든 붙여 넣으면 됩니다.
+  description_en: Turn an image or a line of text into ASCII art. Korean text works as a banner too, and the result copies as plain text to paste anywhere.
 - name: 해외 직구 계산기
   url: https://noodles97.github.io/direct-import-calc/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc
