@@ -1,5 +1,12 @@
 # name/description 은 한국어 페이지용. 영어 페이지(/en/)에는 url_en 이 있는 앱만 보이고, 그때 name_en/description_en 을 씁니다.
 # 한국어만 있는 앱은 url_en 을 적지 않으면 영어 목록에서 빠집니다.
+- name: 포켓 밴드 시퀀서
+  name_en: Pocket Band Sequencer
+  url: https://noodles97.github.io/pocket-band/
+  url_en: https://noodles97.github.io/pocket-band/en/
+  repo: https://github.com/noodles97/noodles97.github.io/tree/main/pocket-band
+  description: 기타, 베이스, 키보드, 드럼 4트랙 피아노롤. 클릭하고 끌어서 음을 그리고 바로 들어본 뒤 표준 MIDI 파일로 내보냅니다. 설치 없이 브라우저에서 돌아갑니다.
+  description_en: A four-track piano roll for guitar, bass, keys and drums. Click and drag to draw notes, play them back and export a standard MIDI file. Runs in the browser, nothing to install.
 - name: 이미지 변환기
   name_en: Image Converter
   url: https://noodles97.github.io/image-converter/

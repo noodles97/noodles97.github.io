@@ -1,0 +1,16 @@
+{
+  "name": "포켓 밴드 시퀀서",
+  "short_name": "포켓 밴드",
+  "description": "브라우저에서 바로 쓰는 4트랙 피아노롤. 기타, 베이스, 키보드, 드럼을 그리고 들어보고 MIDI로 내보냅니다.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eceef3",
+  "theme_color": "#2a63d4",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
