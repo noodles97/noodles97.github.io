@@ -1,16 +1,20 @@
 import * as codecs from './codecs.js';
 
+// 문구는 페이지(_data/image_converter.yml → window.IC_STRINGS)에서 받습니다. 한국어·영어 페이지가 같은 스크립트를 씁니다.
+const T = window.IC_STRINGS;
+const fill = (tpl, vars) => tpl.replace(/\{(\w+)\}/g, (_, k) => (k in vars ? vars[k] : `{${k}}`));
+
 const FORMATS = {
-  png: { label: 'PNG', ext: 'png', mime: 'image/png', alpha: true, hint: '무손실. 투명도를 유지합니다.' },
-  jpeg: { label: 'JPEG', ext: 'jpg', mime: 'image/jpeg', quality: true, hint: '사진에 적합. 투명 영역은 배경색으로 채워집니다.' },
-  webp: { label: 'WebP', ext: 'webp', mime: 'image/webp', alpha: true, quality: true, detect: true, hint: '같은 품질에서 JPEG보다 작습니다. 투명도를 유지합니다.' },
-  avif: { label: 'AVIF', ext: 'avif', mime: 'image/avif', alpha: true, quality: true, detect: true, hint: '가장 작게 압축되지만 인코딩이 느리고 오래된 기기에서 열리지 않을 수 있습니다.' },
-  gif: { label: 'GIF', ext: 'gif', mime: 'image/gif', alpha: 'binary', hint: '256색으로 줄어듭니다. 투명은 완전 투명한 픽셀만 유지됩니다.' },
-  bmp: { label: 'BMP', ext: 'bmp', mime: 'image/bmp', hint: '압축 없는 24비트. 투명 영역은 배경색으로 채워집니다.' },
-  tiff: { label: 'TIFF', ext: 'tif', mime: 'image/tiff', alpha: true, hint: '무손실(Deflate 압축). 투명도를 유지합니다.' },
-  ico: { label: 'ICO', ext: 'ico', mime: 'image/x-icon', alpha: true, hint: '선택한 크기들을 한 파일에 담은 윈도우 아이콘. 정사각형이 아니면 여백이 투명으로 채워집니다.' },
-  pdf: { label: 'PDF', ext: 'pdf', mime: 'application/pdf', quality: true, hint: '이미지 한 장을 JPEG로 담은 1페이지 PDF. 투명 영역은 배경색으로 채워집니다.' },
-  svg: { label: 'SVG', ext: 'svg', mime: 'image/svg+xml', alpha: true, hint: '벡터로 바뀌는 것이 아니라 PNG를 SVG 안에 담습니다.' },
+  png: { label: 'PNG', ext: 'png', mime: 'image/png', alpha: true },
+  jpeg: { label: 'JPEG', ext: 'jpg', mime: 'image/jpeg', quality: true },
+  webp: { label: 'WebP', ext: 'webp', mime: 'image/webp', alpha: true, quality: true, detect: true },
+  avif: { label: 'AVIF', ext: 'avif', mime: 'image/avif', alpha: true, quality: true, detect: true },
+  gif: { label: 'GIF', ext: 'gif', mime: 'image/gif', alpha: 'binary' },
+  bmp: { label: 'BMP', ext: 'bmp', mime: 'image/bmp' },
+  tiff: { label: 'TIFF', ext: 'tif', mime: 'image/tiff', alpha: true },
+  ico: { label: 'ICO', ext: 'ico', mime: 'image/x-icon', alpha: true },
+  pdf: { label: 'PDF', ext: 'pdf', mime: 'application/pdf', quality: true },
+  svg: { label: 'SVG', ext: 'svg', mime: 'image/svg+xml', alpha: true },
 };
 const MAX_DIM = 16384;
 const STORAGE_KEY = 'image-converter:settings';
@@ -58,7 +62,7 @@ function syncSettingsUI() {
   if (s.resize === 'percent') { els.resizeValue.max = 1000; } else { els.resizeValue.max = MAX_DIM; }
   els.qualityOut.textContent = s.quality;
   els.backgroundOut.textContent = s.background;
-  els.hint.textContent = fmt.hint;
+  els.hint.textContent = T.hints[s.format] || '';
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch { /* 저장 공간 없음 */ }
   return s;
 }
@@ -75,7 +79,7 @@ async function detectFormats() {
     if (!fmt.detect) continue;
     fmt.supported = await canEncode(fmt.mime);
     const opt = els.format.querySelector(`option[value=${key}]`);
-    if (!fmt.supported) { opt.disabled = true; opt.textContent += ' (이 브라우저 미지원)'; }
+    if (!fmt.supported) { opt.disabled = true; opt.textContent += T.unsupported_suffix; }
   }
   if (els.format.selectedOptions[0]?.disabled) els.format.value = 'png';
 }
@@ -84,7 +88,7 @@ async function detectFormats() {
 const workerReady = (async () => {
   if (typeof Worker === 'undefined') return null;
   try {
-    const w = new Worker('./worker.js', { type: 'module' });
+    const w = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
     const ok = await new Promise((res) => {
       w.onmessage = (e) => res(!!(e.data && e.data.pong));
       w.onerror = () => res(false);
@@ -97,7 +101,7 @@ const workerReady = (async () => {
       pending.delete(e.data.id);
       e.data.error ? p.reject(new Error(e.data.error)) : p.resolve(e.data.result);
     };
-    w.onerror = (e) => { for (const p of pending.values()) p.reject(new Error(e.message || '워커 오류')); pending.clear(); };
+    w.onerror = (e) => { for (const p of pending.values()) p.reject(new Error(e.message || T.worker_error)); pending.clear(); };
     return w;
   } catch { return null; }
 })();
@@ -131,7 +135,7 @@ async function decode(file) {
   const img = new Image();
   img.decoding = 'async';
   try {
-    await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('이 브라우저가 열 수 없는 형식입니다')); img.src = url; });
+    await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error(T.cannot_open)); img.src = url; });
   } catch (e) { URL.revokeObjectURL(url); throw e; }
   const vector = /svg/i.test(file.type) || /\.svgz?$/i.test(file.name);
   return { source: img, width: img.naturalWidth || 1024, height: img.naturalHeight || 1024, vector, close: () => URL.revokeObjectURL(url) };
@@ -146,14 +150,14 @@ function targetSize(w, h, s) {
   else if (s.resize === 'height') scale = v / h;
   if (s.resize !== 'none' && s.resize !== 'percent' && !s.upscale) scale = Math.min(scale, 1);
   const tw = Math.max(1, Math.round(w * scale)), th = Math.max(1, Math.round(h * scale));
-  if (tw > MAX_DIM || th > MAX_DIM) throw new Error(`결과가 너무 큽니다 (${tw}×${th}). 크기 조절로 ${MAX_DIM}px 이하로 줄여 주세요.`);
+  if (tw > MAX_DIM || th > MAX_DIM) throw new Error(fill(T.too_large, { w: tw, h: th, max: MAX_DIM }));
   return [tw, th];
 }
 
 function makeCanvas(w, h) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const ctx = c.getContext('2d', { willReadFrequently: true });
-  if (!ctx) throw new Error('캔버스를 만들 수 없습니다. 이미지가 너무 클 수 있습니다.');
+  if (!ctx) throw new Error(T.no_canvas);
   ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
   return [c, ctx];
 }
@@ -177,7 +181,7 @@ function render(src, tw, th, background) {
 
 function toBlob(canvas, mime, quality) {
   return new Promise((res, rej) => {
-    try { canvas.toBlob((b) => (b ? res(b) : rej(new Error('이 형식으로 저장하지 못했습니다'))), mime, quality); } catch (e) { rej(e); }
+    try { canvas.toBlob((b) => (b ? res(b) : rej(new Error(T.save_failed))), mime, quality); } catch (e) { rej(e); }
   });
 }
 const blobBytes = async (blob) => new Uint8Array(await blob.arrayBuffer());
@@ -192,7 +196,7 @@ async function encode(canvas, ctx, s) {
     case 'jpeg': return toBlob(canvas, 'image/jpeg', q);
     case 'webp': case 'avif': {
       const blob = await toBlob(canvas, fmt.mime, q);
-      if (blob.type !== fmt.mime) throw new Error(`${fmt.label} 저장을 이 브라우저가 지원하지 않습니다`);
+      if (blob.type !== fmt.mime) throw new Error(fill(T.format_unsupported, { format: fmt.label }));
       return blob;
     }
     case 'bmp': return new Blob([await runCodec('encodeBMP', imageData(), { background: s.background })], { type: fmt.mime });
@@ -218,7 +222,7 @@ async function encode(canvas, ctx, s) {
       const png = await blobBytes(await toBlob(canvas, 'image/png'));
       return new Blob([await runCodec('wrapSVG', { width, height }, png)], { type: fmt.mime });
     }
-    default: throw new Error('알 수 없는 형식');
+    default: throw new Error(T.unknown_format);
   }
 }
 
@@ -312,15 +316,15 @@ function renderList() {
   const done = items.filter((i) => i.status === 'done');
   const inBytes = done.reduce((a, i) => a + i.file.size, 0), outBytes = done.reduce((a, i) => a + i.result.blob.size, 0);
   const working = items.some((i) => i.status === 'working' || i.status === 'queued');
-  els.summary.textContent = working ? `변환 중… ${done.length} / ${items.length}` : done.length ? `${done.length}개 완료 · ${fmtBytes(inBytes)} → ${fmtBytes(outBytes)}` : '';
+  els.summary.textContent = working ? fill(T.converting, { done: done.length, total: items.length }) : done.length ? fill(T.done_summary, { count: done.length, in: fmtBytes(inBytes), out: fmtBytes(outBytes) }) : '';
   els.downloadAll.disabled = done.length === 0 || working;
-  els.downloadAll.textContent = done.length > 1 ? `모두 내려받기 (ZIP, ${done.length}개)` : '내려받기';
+  els.downloadAll.textContent = done.length > 1 ? fill(T.download_zip, { count: done.length }) : T.download_one;
 }
 
 function buildItem(item) {
   const li = document.createElement('li');
   li.className = 'file'; li.dataset.id = item.id;
-  li.innerHTML = `<div class="thumb"></div><div class="file-info"><div class="file-name"></div><div class="file-meta"></div></div><div class="file-actions"><a class="btn btn-small" download hidden>저장</a><button type="button" class="btn btn-small" data-act="remove" aria-label="목록에서 제거">✕</button></div>`;
+  li.innerHTML = `<div class="thumb"></div><div class="file-info"><div class="file-name"></div><div class="file-meta"></div></div><div class="file-actions"><a class="btn btn-small" download hidden>${T.save}</a><button type="button" class="btn btn-small" data-act="remove" aria-label="${T.remove}">✕</button></div>`;
   li.querySelector('[data-act=remove]').addEventListener('click', () => removeItem(item));
   return li;
 }
@@ -344,7 +348,7 @@ function renderItem(item, li = els.files.querySelector(`[data-id="${item.id}"]`)
     link.hidden = false; link.href = item.url; link.download = r.name;
   } else {
     name.textContent = item.file.name;
-    meta.textContent = item.status === 'error' ? item.error : item.status === 'working' ? `변환 중 ${dims}` : `대기 중 · ${fmtBytes(item.file.size)}`;
+    meta.textContent = item.status === 'error' ? item.error : item.status === 'working' ? fill(T.working, { dims }) : fill(T.queued, { size: fmtBytes(item.file.size) });
     link.hidden = true;
   }
 }
@@ -373,7 +377,7 @@ async function downloadAll() {
   if (done.length === 1) { triggerDownload(done[0].url, done[0].result.name); return; }
   els.downloadAll.disabled = true;
   const prev = els.downloadAll.textContent;
-  els.downloadAll.textContent = 'ZIP 만드는 중…';
+  els.downloadAll.textContent = T.zipping;
   try {
     const used = new Map();
     const entries = [];
@@ -388,7 +392,7 @@ async function downloadAll() {
     triggerDownload(url, `images-${FORMATS[done[0].result.format].ext}.zip`);
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   } catch (e) {
-    alert(`ZIP을 만들지 못했습니다: ${e.message}`);
+    alert(fill(T.zip_failed, { error: e.message }));
   } finally { els.downloadAll.textContent = prev; els.downloadAll.disabled = false; }
 }
 
@@ -412,5 +416,5 @@ try { applySettings(JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')); } 
 detectFormats().then(syncSettingsUI);
 syncSettingsUI();
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register(new URL('./sw.js', import.meta.url)).catch(() => {}));
 }

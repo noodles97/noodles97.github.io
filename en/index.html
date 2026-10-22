@@ -1,0 +1,19 @@
+---
+layout: default
+ref: home
+description: Small tools that run right in your browser, and the occasional post.
+---
+{%- assign t = site.data.i18n[page.lang] %}
+<section class="hero">
+  <p class="lead">{{ t.tagline }}</p>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>{{ t.apps }}</h2><a href="{{ t.prefix | append: '/apps/' | relative_url }}">{{ t.view_all }}</a></div>
+  {% include app-cards.html limit=4 %}
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>{{ t.recent_posts }}</h2><a href="{{ t.prefix | append: '/blog/' | relative_url }}">{{ t.view_all }}</a></div>
+  {% include post-list.html limit=5 %}
+</section>

@@ -1,7 +1,12 @@
+# name/description 은 한국어 페이지용. 영어 페이지(/en/)에는 url_en 이 있는 앱만 보이고, 그때 name_en/description_en 을 씁니다.
+# 한국어만 있는 앱은 url_en 을 적지 않으면 영어 목록에서 빠집니다.
 - name: 이미지 변환기
+  name_en: Image Converter
   url: https://noodles97.github.io/image-converter/
+  url_en: https://noodles97.github.io/image-converter/en/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/image-converter
   description: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG로 바꾸고 크기도 줄입니다. 파일이 서버로 올라가지 않고 브라우저 안에서만 처리됩니다.
+  description_en: Convert images to PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF or SVG and resize them. Nothing is uploaded. Everything happens inside your browser.
 - name: 해외 직구 계산기
   url: https://noodles97.github.io/direct-import-calc/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc

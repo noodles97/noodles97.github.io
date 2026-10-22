@@ -63,3 +63,5 @@ h1,h2,h3{line-height:1.25;text-wrap:balance;margin:0}
 .foot-links{display:flex;flex-wrap:wrap;gap:8px 16px}
 .site-foot a{color:var(--fg-muted)}
 .site-foot a.donate{color:#fff}
+.nav a.lang-switch{font-size:13px;line-height:1;padding:5px 10px;border:1px solid var(--line);border-radius:999px}
+.nav a.lang-switch:hover{color:var(--fg);border-color:var(--accent)}

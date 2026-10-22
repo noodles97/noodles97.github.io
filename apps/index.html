@@ -1,14 +1,8 @@
 ---
 layout: default
 title: 앱
+ref: apps
 ---
-<h1 class="page-title">앱</h1>
-<p class="lead">설치 없이 브라우저에서 바로 쓰는 작은 도구들입니다.</p>
-<ul class="cards">
-{% for app in site.data.apps %}
-  <li class="card">
-    <a class="card-main" href="{{ app.url }}"><strong>{{ app.name }}</strong><span>{{ app.description }}</span></a>
-    {% if app.repo %}<a class="card-repo" href="{{ app.repo }}" rel="noopener">소스 보기 (GitHub)</a>{% endif %}
-  </li>
-{% endfor %}
-</ul>
+<h1 class="page-title">{{ page.title }}</h1>
+<p class="lead">{{ site.data.i18n[page.lang].apps_lead }}</p>
+{% include app-cards.html %}

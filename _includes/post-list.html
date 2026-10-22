@@ -1,0 +1,13 @@
+{%- comment -%} 현재 페이지 언어의 글 목록. include.limit 으로 개수 제한. {%- endcomment -%}
+{%- assign lang = page.lang | default: site.lang -%}
+{%- assign t = site.data.i18n[lang] -%}
+{%- assign posts = site.posts | where: "lang", lang -%}
+{%- if posts.size > 0 %}
+<ul class="posts">
+{% for post in posts limit: include.limit %}
+  <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: t.list_date_format }}</time></li>
+{% endfor %}
+</ul>
+{%- else %}
+<p class="empty">{{ t.no_posts }}</p>
+{%- endif %}

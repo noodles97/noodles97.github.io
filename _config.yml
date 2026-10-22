@@ -14,5 +14,33 @@ plugins:
   - jekyll-sitemap
 feed:
   path: feed.xml
+  categories:
+    - en
+# 언어: 기본은 한국어(ko). en/ 아래 페이지와 _posts/en/ 아래 글은 영어(en)로 표시됩니다.
+# 문자열은 _data/i18n.yml, 영어 글의 주소는 /en/blog/… 입니다.
+defaults:
+  - scope:
+      path: ""
+    values:
+      lang: ko
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: "en"
+    values:
+      lang: en
+  - scope:
+      path: "_posts/en"
+      type: posts
+    values:
+      lang: en
+      categories: [en]
+      permalink: /en/blog/:year/:month/:day/:title/
 exclude:
   - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor

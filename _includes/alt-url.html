@@ -1,0 +1,11 @@
+{%- comment -%}
+현재 페이지의 다른 언어 짝(같은 ref, 다른 lang)의 URL을 출력합니다. 짝이 없으면 빈 문자열.
+사용: {% capture alt_url %}{% include alt-url.html %}{% endcapture %}
+{%- endcomment -%}
+{%- assign cur_lang = page.lang | default: site.lang -%}
+{%- if page.ref -%}
+  {%- assign docs = site.pages | concat: site.posts -%}
+  {%- for d in docs -%}
+    {%- if d.ref == page.ref and d.lang != cur_lang and d.lang -%}{{ d.url | relative_url }}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

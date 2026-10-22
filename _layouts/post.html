@@ -1,13 +1,17 @@
 ---
 layout: default
 ---
+{%- assign lang = page.lang | default: site.lang -%}
+{%- assign t = site.data.i18n[lang] -%}
+{%- if lang == 'en' %}{% assign other = 'ko' %}{% else %}{% assign other = 'en' %}{% endif -%}
+{%- capture alt_url %}{% include alt-url.html %}{% endcapture -%}
 <article class="post">
   <header class="post-head">
     <h1>{{ page.title }}</h1>
-    <p class="meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y년 %-m월 %-d일" }}</time>{% if page.tags.size > 0 %} · {{ page.tags | join: ", " }}{% endif %}</p>
+    <p class="meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: t.date_format }}</time>{% if page.tags.size > 0 %} · {{ page.tags | join: ", " }}{% endif %}{% if alt_url != '' %} · <a href="{{ alt_url }}" hreflang="{{ other }}" lang="{{ other }}" onclick="try{localStorage.setItem('lang','{{ other }}')}catch(e){}">{{ site.data.i18n[other].read_in }}</a>{% endif %}</p>
   </header>
   <div class="prose">
 {{ content }}
   </div>
-  <p class="back"><a href="{{ '/blog/' | relative_url }}">글 목록으로</a></p>
+  <p class="back"><a href="{{ t.prefix | append: '/blog/' | relative_url }}">{{ t.back }}</a></p>
 </article>

@@ -1,0 +1,9 @@
+{%- comment -%}
+헤더의 언어 전환 링크. 짝 페이지가 있으면 그리로, 없으면 다른 언어의 홈으로 갑니다.
+{%- endcomment -%}
+{%- assign cur_lang = page.lang | default: site.lang -%}
+{%- if cur_lang == 'en' -%}{%- assign other = 'ko' -%}{%- else -%}{%- assign other = 'en' -%}{%- endif -%}
+{%- assign o = site.data.i18n[other] -%}
+{%- capture alt_url %}{% include alt-url.html %}{% endcapture -%}
+{%- if alt_url == '' -%}{%- assign alt_url = o.prefix | append: '/' | relative_url -%}{%- endif -%}
+<a class="lang-switch" href="{{ alt_url }}" lang="{{ other }}" hreflang="{{ other }}" title="{{ o.switch_title }}" onclick="try{localStorage.setItem('lang','{{ other }}')}catch(e){}">{{ o.name }}</a>

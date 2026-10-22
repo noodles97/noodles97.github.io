@@ -1,9 +1,20 @@
+{%- assign lang = page.lang | default: site.lang -%}
+{%- assign t = site.data.i18n[lang] -%}
+{%- capture alt_url %}{% include alt-url.html %}{% endcapture -%}
+{%- if lang == 'en' %}{% assign other = 'ko' %}{% else %}{% assign other = 'en' %}{% endif -%}
 <!doctype html>
-<html lang="ko">
+<html lang="{{ lang }}">
 <head>
 <meta charset="utf-8">
+{% include lang-redirect.html url=alt_url %}
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-{% seo %}
+{%- if page.title %}{% assign doc_title = page.title | append: ' | ' | append: site.title %}{% else %}{% assign doc_title = site.title | append: ' | ' | append: t.tagline %}{% endif %}
+<title>{{ doc_title }}</title>
+{% seo title=false %}
+{%- if alt_url != '' %}
+<link rel="alternate" hreflang="{{ lang }}" href="{{ page.url | absolute_url }}">
+<link rel="alternate" hreflang="{{ other }}" href="{{ alt_url | absolute_url }}">
+{%- endif %}
 {% feed_meta %}
 {% include analytics.html %}
 <meta name="theme-color" content="#28499a">
@@ -15,11 +26,15 @@
 <body>
 <div class="page">
 <header class="site-head">
-  <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
-  <nav class="nav" aria-label="주 메뉴">
-    <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>홈</a>
-    <a href="{{ '/blog/' | relative_url }}"{% if page.url contains '/blog' %} aria-current="page"{% endif %}>블로그</a>
-    <a href="{{ '/apps/' | relative_url }}"{% if page.url == '/apps/' %} aria-current="page"{% endif %}>앱</a>
+  <a class="brand" href="{{ t.prefix | append: '/' | relative_url }}">{{ site.title }}</a>
+  <nav class="nav" aria-label="{{ t.nav_label }}">
+    {%- assign home_url = t.prefix | append: '/' -%}
+    {%- assign blog_url = t.prefix | append: '/blog/' -%}
+    {%- assign apps_url = t.prefix | append: '/apps/' %}
+    <a href="{{ home_url | relative_url }}"{% if page.url == home_url %} aria-current="page"{% endif %}>{{ t.home }}</a>
+    <a href="{{ blog_url | relative_url }}"{% if page.url contains '/blog' %} aria-current="page"{% endif %}>{{ t.blog }}</a>
+    <a href="{{ apps_url | relative_url }}"{% if page.url == apps_url %} aria-current="page"{% endif %}>{{ t.apps }}</a>
+    {% include lang-switch.html %}
   </nav>
 </header>
 <main class="content">
@@ -28,10 +43,10 @@
 <footer class="site-foot">
   <div class="foot-links">
     <span>© {{ site.time | date: "%Y" }} {{ site.title }}</span>
-    <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+    <a href="{{ t.feed | relative_url }}">RSS</a>
     <a href="https://github.com/noodles97" rel="noopener">GitHub</a>
   </div>
-  <a class="donate donate-small" href="{{ site.donate_url }}" rel="noopener">후원하기</a>
+  <a class="donate donate-small" href="{{ site.donate_url }}" rel="noopener">{{ t.donate }}</a>
 </footer>
 </div>
 </body>

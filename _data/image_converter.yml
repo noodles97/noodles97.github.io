@@ -1,0 +1,146 @@
+# 이미지 변환기의 모든 문구. page: HTML에 들어가는 글, js: app.js 가 런타임에 쓰는 글.
+# 템플릿은 _includes/image-converter.html, 페이지는 image-converter/index.html (ko) 과 image-converter/en/index.html (en).
+ko:
+  page:
+    title: 이미지 변환기
+    doc_title: 이미지 변환기 · noodles97
+    short_title: 이미지 변환
+    description: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG로 바꾸는 브라우저 이미지 변환기. 파일이 서버로 올라가지 않고 기기 안에서만 처리됩니다.
+    nav_label: 주 메뉴
+    nav_apps: 앱
+    nav_blog: 블로그
+    lead: 이미지를 올리면 원하는 형식으로 바꿔 내려받습니다. 모든 처리가 이 브라우저 안에서 끝나고, 파일은 어디로도 전송되지 않습니다.
+    drop_title: 이미지를 여기에 끌어다 놓거나 눌러서 선택
+    drop_sub: 여러 장을 한 번에 넣을 수 있고, 클립보드 이미지를 붙여넣어도 됩니다.
+    format: 출력 형식
+    opt_ico: ICO (아이콘)
+    opt_svg: SVG (래스터 포함)
+    quality: 품질
+    resize: 크기 조절
+    resize_none: 원본 크기
+    resize_long: 긴 변 기준 (px)
+    resize_width: 너비 기준 (px)
+    resize_height: 높이 기준 (px)
+    resize_percent: 비율 (%)
+    resize_value: 크기 값
+    upscale: 작은 이미지도 키우기
+    background: 배경색
+    background_note: (투명 영역)
+    dither: 디더링 (색 계조를 부드럽게)
+    pdf_page: PDF 용지
+    pdf_image: 이미지 크기 그대로
+    pdf_a4: A4에 맞춤
+    pdf_letter: Letter에 맞춤
+    ico_sizes: 아이콘 크기
+    clear: 목록 비우기
+    download_all: 모두 내려받기
+    info_title: 지원 형식
+    info_in: 넣을 수 있는 형식
+    info_in_body: JPEG, PNG, GIF, WebP, BMP, ICO, SVG, AVIF와 그 밖에 이 브라우저가 열 수 있는 모든 이미지. Safari에서는 HEIC도 됩니다. 애니메이션은 첫 프레임만 쓰입니다.
+    info_out: 만들 수 있는 형식
+    info_out_body: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG. WebP와 AVIF 저장은 브라우저 지원에 따라 달라지며, 안 되면 목록에서 비활성으로 표시됩니다.
+    info_etc: 그 밖에
+    info_etc_body: 사진의 회전 정보(EXIF)는 반영한 뒤 제거됩니다. 변환 결과에는 메타데이터가 남지 않습니다. 휴대전화에서는 홈 화면에 추가해 앱처럼 쓸 수 있고, 한 번 연 뒤에는 오프라인에서도 동작합니다.
+    donate: 후원하기
+  js:
+    hints:
+      png: 무손실. 투명도를 유지합니다.
+      jpeg: 사진에 적합. 투명 영역은 배경색으로 채워집니다.
+      webp: 같은 품질에서 JPEG보다 작습니다. 투명도를 유지합니다.
+      avif: 가장 작게 압축되지만 인코딩이 느리고 오래된 기기에서 열리지 않을 수 있습니다.
+      gif: 256색으로 줄어듭니다. 투명은 완전 투명한 픽셀만 유지됩니다.
+      bmp: 압축 없는 24비트. 투명 영역은 배경색으로 채워집니다.
+      tiff: 무손실(Deflate 압축). 투명도를 유지합니다.
+      ico: 선택한 크기들을 한 파일에 담은 윈도우 아이콘. 정사각형이 아니면 여백이 투명으로 채워집니다.
+      pdf: 이미지 한 장을 JPEG로 담은 1페이지 PDF. 투명 영역은 배경색으로 채워집니다.
+      svg: 벡터로 바뀌는 것이 아니라 PNG를 SVG 안에 담습니다.
+    unsupported_suffix: " (이 브라우저 미지원)"
+    worker_error: 워커 오류
+    cannot_open: 이 브라우저가 열 수 없는 형식입니다
+    too_large: "결과가 너무 큽니다 ({w}×{h}). 크기 조절로 {max}px 이하로 줄여 주세요."
+    no_canvas: 캔버스를 만들 수 없습니다. 이미지가 너무 클 수 있습니다.
+    save_failed: 이 형식으로 저장하지 못했습니다
+    format_unsupported: "{format} 저장을 이 브라우저가 지원하지 않습니다"
+    unknown_format: 알 수 없는 형식
+    converting: "변환 중… {done} / {total}"
+    done_summary: "{count}개 완료 · {in} → {out}"
+    download_zip: "모두 내려받기 (ZIP, {count}개)"
+    download_one: 내려받기
+    save: 저장
+    remove: 목록에서 제거
+    working: "변환 중 {dims}"
+    queued: "대기 중 · {size}"
+    zipping: ZIP 만드는 중…
+    zip_failed: "ZIP을 만들지 못했습니다: {error}"
+en:
+  page:
+    title: Image Converter
+    doc_title: Image Converter · noodles97
+    short_title: Converter
+    description: Convert images to PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF or SVG in your browser. Files are never uploaded and stay on your device.
+    nav_label: Main menu
+    nav_apps: Apps
+    nav_blog: Blog
+    lead: Drop in an image, pick a format, download the result. Everything happens inside this browser and your files are never sent anywhere.
+    drop_title: Drag images here or click to choose
+    drop_sub: You can add several at once, or paste an image from the clipboard.
+    format: Output format
+    opt_ico: ICO (icon)
+    opt_svg: SVG (embedded raster)
+    quality: Quality
+    resize: Resize
+    resize_none: Original size
+    resize_long: Longest side (px)
+    resize_width: Width (px)
+    resize_height: Height (px)
+    resize_percent: Scale (%)
+    resize_value: Size value
+    upscale: Enlarge smaller images too
+    background: Background
+    background_note: (for transparent areas)
+    dither: Dithering (smoother colour gradients)
+    pdf_page: PDF page size
+    pdf_image: Same as image
+    pdf_a4: Fit to A4
+    pdf_letter: Fit to Letter
+    ico_sizes: Icon sizes
+    clear: Clear list
+    download_all: Download all
+    info_title: Supported formats
+    info_in: Input
+    info_in_body: JPEG, PNG, GIF, WebP, BMP, ICO, SVG, AVIF and any other image this browser can open. Safari also opens HEIC. Only the first frame of an animation is used.
+    info_out: Output
+    info_out_body: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG. Saving WebP and AVIF depends on browser support. Where it is missing they appear disabled in the list.
+    info_etc: Also
+    info_etc_body: EXIF rotation is applied and then removed. The output carries no metadata. On a phone you can add this page to the home screen and use it like an app, and once opened it works offline.
+    donate: Buy me a coffee
+  js:
+    hints:
+      png: Lossless. Keeps transparency.
+      jpeg: Best for photos. Transparent areas are filled with the background colour.
+      webp: Smaller than JPEG at the same quality. Keeps transparency.
+      avif: Smallest files, but encoding is slow and older devices may not open it.
+      gif: Reduced to 256 colours. Only fully transparent pixels stay transparent.
+      bmp: Uncompressed 24-bit. Transparent areas are filled with the background colour.
+      tiff: Lossless (Deflate compression). Keeps transparency.
+      ico: Windows icon holding the selected sizes in one file. Non-square images are padded with transparency.
+      pdf: A one-page PDF with the image stored as JPEG. Transparent areas are filled with the background colour.
+      svg: Not vectorised. The PNG is embedded inside an SVG.
+    unsupported_suffix: " (not supported by this browser)"
+    worker_error: Worker error
+    cannot_open: This browser cannot open that format
+    too_large: "Result is too large ({w}×{h}). Use Resize to keep it under {max}px."
+    no_canvas: Could not create a canvas. The image may be too large.
+    save_failed: Could not save in this format
+    format_unsupported: "This browser cannot save {format}"
+    unknown_format: Unknown format
+    converting: "Converting… {done} / {total}"
+    done_summary: "{count} done · {in} → {out}"
+    download_zip: "Download all (ZIP, {count} files)"
+    download_one: Download
+    save: Save
+    remove: Remove from list
+    working: "Converting {dims}"
+    queued: "Queued · {size}"
+    zipping: Building ZIP…
+    zip_failed: "Could not build the ZIP: {error}"
