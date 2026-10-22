@@ -6,4 +6,4 @@
 {%- assign o = site.data.i18n[other] -%}
 {%- capture alt_url %}{% include alt-url.html %}{% endcapture -%}
 {%- if alt_url == '' -%}{%- assign alt_url = o.prefix | append: '/' | relative_url -%}{%- endif -%}
-<a class="lang-switch" href="{{ alt_url }}" lang="{{ other }}" hreflang="{{ other }}" title="{{ o.switch_title }}">{{ o.name }}</a>
+<a class="lang-switch" href="{{ alt_url }}" lang="{{ other }}" hreflang="{{ other }}" title="{{ o.switch_title }}" onclick="try{localStorage.setItem('lang','{{ other }}')}catch(e){}">{{ o.name }}</a>

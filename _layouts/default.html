@@ -6,6 +6,7 @@
 <html lang="{{ lang }}">
 <head>
 <meta charset="utf-8">
+{% include lang-redirect.html url=alt_url %}
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 {%- if page.title %}{% assign doc_title = page.title | append: ' | ' | append: site.title %}{% else %}{% assign doc_title = site.title | append: ' | ' | append: t.tagline %}{% endif %}
 <title>{{ doc_title }}</title>

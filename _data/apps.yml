@@ -1,5 +1,5 @@
-# name/description 은 한국어, name_en/description_en 은 영어 페이지(/en/)에서 씁니다.
-# url_en 이 있으면 영어 페이지의 카드가 그 주소로 연결됩니다(없으면 url).
+# name/description 은 한국어 페이지용. 영어 페이지(/en/)에는 url_en 이 있는 앱만 보이고, 그때 name_en/description_en 을 씁니다.
+# 한국어만 있는 앱은 url_en 을 적지 않으면 영어 목록에서 빠집니다.
 - name: 이미지 변환기
   name_en: Image Converter
   url: https://noodles97.github.io/image-converter/
@@ -8,14 +8,10 @@
   description: PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF, SVG로 바꾸고 크기도 줄입니다. 파일이 서버로 올라가지 않고 브라우저 안에서만 처리됩니다.
   description_en: Convert images to PNG, JPEG, WebP, AVIF, GIF, BMP, TIFF, ICO, PDF or SVG and resize them. Nothing is uploaded. Everything happens inside your browser.
 - name: 해외 직구 계산기
-  name_en: Overseas Purchase Calculator
   url: https://noodles97.github.io/direct-import-calc/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/direct-import-calc
   description: 국내 구매와 해외 직구 총비용을 환율, 배송비, 면세 한도, 관세, 부가세, 카드 수수료까지 넣어 비교합니다. 휴대전화 홈 화면에 추가해 앱처럼 쓸 수 있습니다.
-  description_en: Compares the total cost of buying in Korea versus importing from abroad, including exchange rate, shipping, duty-free limits, customs duty, VAT and card fees. Korean interface.
 - name: 우사기 번역기
-  name_en: Usagi Translator
   url: https://noodles97.github.io/usagi-translator/
   repo: https://github.com/noodles97/noodles97.github.io/tree/main/usagi-translator
   description: 한국어를 우사기 말로 바꾸고 다시 한국어로 되돌립니다. 우라, 하아?, 야하, 푸루야. 인공지능 없이 규칙만으로 양방향 번역하고, 팬 사전으로 뜻도 옮깁니다.
-  description_en: Turns Korean into the speech of Usagi from Chiikawa and back again. Ura, haa?, yaha, puruya. Rule-based, no AI, with a fan dictionary for meanings. Korean interface.

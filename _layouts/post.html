@@ -8,7 +8,7 @@ layout: default
 <article class="post">
   <header class="post-head">
     <h1>{{ page.title }}</h1>
-    <p class="meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: t.date_format }}</time>{% if page.tags.size > 0 %} · {{ page.tags | join: ", " }}{% endif %}{% if alt_url != '' %} · <a href="{{ alt_url }}" hreflang="{{ other }}" lang="{{ other }}">{{ site.data.i18n[other].read_in }}</a>{% endif %}</p>
+    <p class="meta"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: t.date_format }}</time>{% if page.tags.size > 0 %} · {{ page.tags | join: ", " }}{% endif %}{% if alt_url != '' %} · <a href="{{ alt_url }}" hreflang="{{ other }}" lang="{{ other }}" onclick="try{localStorage.setItem('lang','{{ other }}')}catch(e){}">{{ site.data.i18n[other].read_in }}</a>{% endif %}</p>
   </header>
   <div class="prose">
 {{ content }}

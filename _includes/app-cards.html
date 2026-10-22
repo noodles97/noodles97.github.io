@@ -1,8 +1,9 @@
-{%- comment -%} 앱 카드 목록. page.lang 이 en 이면 apps.yml 의 *_en 값을 씁니다. {%- endcomment -%}
+{%- comment -%} 앱 카드 목록. page.lang 이 en 이면 url_en 이 있는 앱만, *_en 값으로 보여 줍니다. {%- endcomment -%}
 {%- assign lang = page.lang | default: site.lang -%}
 {%- assign t = site.data.i18n[lang] -%}
 <ul class="cards">
-{% for app in site.data.apps limit: include.limit %}
+{%- if lang == 'en' %}{% assign apps = site.data.apps | where_exp: "a", "a.url_en" %}{% else %}{% assign apps = site.data.apps %}{% endif -%}
+{% for app in apps limit: include.limit %}
   {%- assign name = app.name -%}{%- assign desc = app.description -%}{%- assign url = app.url -%}
   {%- if lang == 'en' -%}
     {%- if app.name_en %}{% assign name = app.name_en %}{% endif -%}

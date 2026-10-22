@@ -1,0 +1,9 @@
+{%- comment -%}
+한국어 페이지에 영어 짝(include.url)이 있을 때, 브라우저 언어가 한국어가 아니면 영어 페이지로 보냅니다.
+헤더의 언어 링크를 직접 눌러 고른 언어(localStorage 'lang')가 있으면 그 선택을 우선합니다.
+영어 짝이 없는 글(번역기·직구 글 등)은 그대로 한국어로 보여 줍니다.
+{%- endcomment -%}
+{%- assign cur = page.lang | default: site.lang -%}
+{%- if cur == 'ko' and include.url != '' %}
+<script>(function(){try{if(localStorage.getItem('lang')==='ko')return;var l=navigator.language||'';if(l&&l.slice(0,2).toLowerCase()!=='ko')location.replace('{{ include.url }}')}catch(e){}})();</script>
+{%- endif %}
