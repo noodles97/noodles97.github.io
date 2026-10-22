@@ -79,18 +79,22 @@ main{flex:1; min-height:0; display:flex; gap:8px}
 .track .name{font-family:var(--font-disp); font-weight:600; font-size:15px; display:flex; align-items:center; gap:8px}
 .track .name .dot{width:10px; height:10px; border-radius:50%; background:var(--tc)}
 .track .key{margin-left:auto; font-family:var(--font-mono); font-size:10px; color:var(--muted); border:1px solid var(--line); border-radius:3px; padding:0 4px}
-.track .volrow{display:flex; align-items:center; gap:8px}
-.track .mute{background:none; border:0; padding:2px; border-radius:4px; color:var(--fg); display:inline-flex; width:26px; height:26px; align-items:center; justify-content:center; flex:none}
-.track .mute:hover{background:var(--panel2)}
-.track .mute svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
-.track .mute .on{display:block} .track .mute .off{display:none}
-.track .mute[aria-pressed="true"]{color:var(--danger)}
-.track .mute[aria-pressed="true"] .on{display:none} .track .mute[aria-pressed="true"] .off{display:block}
-.track .vol{flex:1; min-width:0; margin:0; -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right, var(--tc) var(--pct,80%), var(--line2) var(--pct,80%)); outline-offset:4px; cursor:pointer}
-.track .vol::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--tc); border:2px solid var(--panel); box-shadow:0 0 0 1px var(--line2)}
-.track .vol::-moz-range-thumb{width:10px; height:10px; border-radius:50%; background:var(--tc); border:2px solid var(--panel); box-shadow:0 0 0 1px var(--line2)}
-.track .vol::-moz-range-track{background:transparent}
-.track .mute[aria-pressed="true"] ~ .vol{opacity:.35}
+.volrow{display:flex; align-items:center; gap:8px}
+.rail .mute{background:none; border:0; padding:2px; border-radius:4px; color:var(--fg); display:inline-flex; width:26px; height:26px; align-items:center; justify-content:center; flex:none}
+.rail .mute:hover{background:var(--panel2)}
+.rail .mute svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.rail .mute .on{display:block} .rail .mute .off{display:none}
+.rail .mute[aria-pressed="true"]{color:var(--danger)}
+.rail .mute[aria-pressed="true"] .on{display:none} .rail .mute[aria-pressed="true"] .off{display:block}
+.rail .vol{flex:1; min-width:0; margin:0; -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right, var(--tc) var(--pct,80%), var(--line2) var(--pct,80%)); outline-offset:4px; cursor:pointer}
+.rail .vol::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--tc); border:2px solid var(--panel); box-shadow:0 0 0 1px var(--line2)}
+.rail .vol::-moz-range-thumb{width:10px; height:10px; border-radius:50%; background:var(--tc); border:2px solid var(--panel); box-shadow:0 0 0 1px var(--line2)}
+.rail .vol::-moz-range-track{background:transparent}
+.rail .mute[aria-pressed="true"] ~ .vol{opacity:.35}
+/* 폰에서만 보이는, 선택한 트랙의 음소거·볼륨 한 줄 */
+.mixer{display:none; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:6px 10px 6px 12px; position:relative; align-items:center; gap:8px}
+.mixer::before{content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px; border-radius:2px; background:var(--tc)}
+.mixer .vol::-webkit-slider-thumb{width:18px; height:18px}
 
 .roll{flex:1; min-width:0; min-height:0; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); position:relative; overscroll-behavior:contain}
 .sheet{display:grid; position:relative}
@@ -118,12 +122,26 @@ canvas.notes{display:block; touch-action:none; cursor:crosshair}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
 
 @media (max-width:760px){
-  main{flex-direction:column}
-  .rail{width:auto; flex-direction:row; flex-wrap:wrap}
-  .track{flex:1 1 140px; padding:6px 8px 6px 12px}
-  .track .key{display:none}
-  .brand small{display:none}
-  .status{flex-basis:100%; margin-left:0}
-  .sep{display:none}
+  body{gap:6px; padding-block:6px}
+  main{flex-direction:column; gap:6px}
+  .top{gap:6px}
+  .brand{font-size:16px; gap:6px}
+  .brand .site,.brand .slash,.brand small{display:none}
+  .top-actions{gap:4px}
+  .btn.collapsible span{display:none}
+  .btn.collapsible{padding:6px; width:32px; justify-content:center}
+  .bar{padding:6px 8px; gap:6px}
+  .bar .btn.primary{min-width:0}
+  .sep,.status{display:none}
+  .rail{width:auto; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px}
+  .track{padding:8px 6px 8px 10px; gap:0; min-width:0}
+  .track .name{font-size:13px; gap:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block}
+  .track .name .dot{display:inline-block; vertical-align:middle; margin-right:5px; width:8px; height:8px}
+  .track .key,.track .volrow{display:none}
+  .mixer{display:flex; grid-column:1/-1}
+}
+@media (max-width:420px){
+  .bar .btn.primary span{display:none}
+  .bar .btn.primary{width:40px; padding:6px}
 }
 @media (prefers-reduced-motion: reduce){ .toast{transition:none} }

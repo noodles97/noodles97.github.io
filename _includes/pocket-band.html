@@ -64,9 +64,9 @@
 <header class="top">
   <div class="brand"><a class="site" href="{{ site_t.prefix | append: '/' | relative_url }}">noodles97</a><span class="slash" aria-hidden="true">/</span><span data-i18n="brand">포켓 밴드 시퀀서</span> <small data-i18n="brand_sub">기타 · 베이스 · 키보드 · 드럼</small></div>
   <div class="top-actions">
-    <button class="btn" id="btnMidi" type="button"><svg class="i"><use href="#i-down"/></svg><span data-i18n="midi">MIDI 내보내기</span></button>
-    <button class="btn" id="btnSave" type="button"><svg class="i"><use href="#i-save"/></svg><span data-i18n="save">프로젝트 저장</span></button>
-    <button class="btn" id="btnLoad" type="button"><svg class="i"><use href="#i-folder"/></svg><span data-i18n="load">불러오기</span></button>
+    <button class="btn collapsible" id="btnMidi" type="button" data-i18n-aria="midi"><svg class="i"><use href="#i-down"/></svg><span data-i18n="midi">MIDI 내보내기</span></button>
+    <button class="btn collapsible" id="btnSave" type="button" data-i18n-aria="save"><svg class="i"><use href="#i-save"/></svg><span data-i18n="save">프로젝트 저장</span></button>
+    <button class="btn collapsible" id="btnLoad" type="button" data-i18n-aria="load"><svg class="i"><use href="#i-folder"/></svg><span data-i18n="load">불러오기</span></button>
     <input id="fileLoad" class="sr" type="file" accept="application/json,.json" aria-label="프로젝트 파일 선택" data-i18n-aria="load_file">
     <button class="btn sq" id="btnHelp" type="button" aria-label="도움말" data-i18n-aria="help"><svg class="i"><use href="#i-help"/></svg></button>
     <a class="btn" id="btnLang" href="{{ alt_url }}" lang="{{ other }}" hreflang="{{ other }}" title="{{ o.switch_title }}" onclick="try{localStorage.setItem('lang','{{ other }}')}catch(e){}"><svg class="i"><use href="#i-globe"/></svg><span>{{ o.name }}</span></a>
@@ -75,8 +75,8 @@
 
 <div class="bar">
   <div class="group">
-    <button class="btn primary" id="btnPlay" type="button"><svg class="i"><use id="playIcon" href="#i-play"/></svg><span id="playLabel" data-i18n="play">재생</span></button>
-    <button class="btn" id="btnLoop" type="button" aria-pressed="true" data-i18n-title="loop" title="반복"><svg class="i"><use href="#i-loop"/></svg><span data-i18n="loop">반복</span></button>
+    <button class="btn primary" id="btnPlay" type="button" data-i18n-aria="play"><svg class="i"><use id="playIcon" href="#i-play"/></svg><span id="playLabel" data-i18n="play">재생</span></button>
+    <button class="btn collapsible" id="btnLoop" type="button" aria-pressed="true" data-i18n-title="loop" title="반복" data-i18n-aria="loop"><svg class="i"><use href="#i-loop"/></svg><span data-i18n="loop">반복</span></button>
   </div>
   <div class="group">
     <label for="inpBpm">BPM</label>
@@ -89,12 +89,12 @@
   <span class="sep"></span>
   <div class="group" role="radiogroup" aria-label="편집 모드" data-i18n-aria="edit_mode">
     <div class="seg">
-      <button class="btn" id="modeDraw" type="button" aria-pressed="true"><svg class="i"><use href="#i-pen"/></svg><span data-i18n="draw">그리기</span></button>
-      <button class="btn" id="modeErase" type="button" aria-pressed="false"><svg class="i"><use href="#i-eraser"/></svg><span data-i18n="erase">지우기</span></button>
-      <button class="btn" id="modeScroll" type="button" aria-pressed="false"><svg class="i"><use href="#i-hand"/></svg><span data-i18n="scroll">스크롤</span></button>
+      <button class="btn collapsible" id="modeDraw" type="button" aria-pressed="true" data-i18n-aria="draw"><svg class="i"><use href="#i-pen"/></svg><span data-i18n="draw">그리기</span></button>
+      <button class="btn collapsible" id="modeErase" type="button" aria-pressed="false" data-i18n-aria="erase"><svg class="i"><use href="#i-eraser"/></svg><span data-i18n="erase">지우기</span></button>
+      <button class="btn collapsible" id="modeScroll" type="button" aria-pressed="false" data-i18n-aria="scroll"><svg class="i"><use href="#i-hand"/></svg><span data-i18n="scroll">스크롤</span></button>
     </div>
   </div>
-  <button class="btn ghost danger" id="btnClear" type="button" aria-pressed="false"><svg class="i"><use href="#i-trash"/></svg><span id="clearLabel" data-i18n="clear">트랙 비우기</span></button>
+  <button class="btn ghost danger collapsible" id="btnClear" type="button" aria-pressed="false" data-i18n-aria="clear"><svg class="i"><use href="#i-trash"/></svg><span id="clearLabel" data-i18n="clear">트랙 비우기</span></button>
   <div class="status" id="status"></div>
 </div>
 
