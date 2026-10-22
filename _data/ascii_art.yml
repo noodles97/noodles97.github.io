@@ -1,0 +1,102 @@
+# 아스키 아트 변환기의 모든 문구. page: HTML에 들어가는 글, js: app.js 가 런타임에 쓰는 글.
+# 템플릿은 _includes/ascii-art.html, 페이지는 ascii-art/index.html (ko) 과 ascii-art/en/index.html (en).
+ko:
+  page:
+    title: 아스키 아트 변환기
+    doc_title: 아스키 아트 변환기 · noodles97
+    description: 이미지나 글자를 문자만으로 그린 그림(ASCII 아트)으로 바꾸는 브라우저 변환기. 한글 글자도 배너로 만들 수 있습니다.
+    nav_label: 주 메뉴
+    nav_apps: 앱
+    nav_blog: 블로그
+    lead: 이미지나 글자를 문자로만 그린 그림으로 바꿉니다.
+    mode_image: 이미지
+    mode_text: 글자
+    drop_title: 이미지를 여기에 끌어다 놓거나 눌러서 고르세요
+    drop_sub: PNG · JPG · GIF · WebP · 클립보드 붙여넣기(Ctrl+V)도 됩니다
+    sample_name: 샘플 이미지 (구체와 격자)
+    sample_tag: 샘플
+    text_label: 변환할 글자
+    text_default: 안녕 ASCII
+    font: 글꼴
+    font_sans: 고딕 (IBM Plex Sans KR)
+    font_display: 굵은 제목체 (Black Han Sans)
+    font_serif: 명조 (시스템 세리프)
+    font_mono: 모노 (IBM Plex Mono)
+    columns: 가로 글자 수
+    charset: 문자 집합
+    cs_standard: 기본 (10자)
+    cs_dense: 세밀 (70자)
+    cs_blocks: 블록 (█▓▒░)
+    cs_dots: 점 (●◆○·)
+    cs_custom: 직접 입력
+    custom_placeholder: 진한 글자부터 옅은 글자 순서로 입력
+    contrast: 대비
+    invert: 명암 반전 (밝은 배경에 붙여 넣을 때)
+    color: 원본 색 유지 (화면용, 복사하면 색은 빠집니다)
+    output: 결과
+    copy: 복사
+    out_size: 출력 글자 크기
+    about_title: 어떻게 쓰나요
+    about_lead: 아스키 아트는 글자만으로 그린 그림입니다. 이미지를 올리거나 글자를 입력하면, 밝기를 글자의 “진하기”로 바꿔 문자 그림을 만듭니다.
+    about_image: "이미지 모드: 파일을 끌어다 놓거나, 선택하거나, 클립보드에서 붙여 넣으세요. 가로 글자 수를 늘리면 더 세밀해지고, 줄이면 채팅창이나 코드 주석에 넣기 좋아집니다."
+    about_text: "글자 모드: 한글·영어·숫자 어떤 글자든 큰 배너로 만듭니다. 글꼴을 브라우저가 직접 그리기 때문에 별도 폰트 데이터 없이 모든 글자가 됩니다."
+    about_charset: "문자 집합: 세밀(70자)은 사진에, 블록(█▓▒░)은 로고나 글자에 잘 맞습니다. “직접 입력”에 진한 글자부터 옅은 글자 순으로 적으면 나만의 팔레트가 됩니다."
+    about_invert: "명암 반전: 결과는 어두운 바탕을 기준으로 만들어집니다. 흰 바탕의 문서나 메신저에 붙여 넣을 때는 반전을 켜세요."
+    about_how: "원리: 이미지를 가로 글자 수만큼의 작은 격자로 축소한 뒤, 각 칸의 밝기(0.2126R + 0.7152G + 0.0722B)를 구합니다. 글자 한 칸은 가로보다 세로가 약 두 배 길기 때문에 세로 칸 수를 절반으로 줄여 비율을 맞추고, 밝기 값에 따라 문자 집합에서 글자 하나를 고릅니다."
+    donate: 후원하기
+  js:
+    copied: 클립보드에 복사했습니다.
+    copy_fail: 복사가 막혀 있습니다. 결과를 선택해 두었으니 Ctrl+C로 복사하세요.
+    stats: "{cols} × {rows} · {chars}자"
+    load_fail: 이미지를 읽지 못했습니다. 다른 파일을 시도해 보세요.
+    clipboard: 클립보드
+en:
+  page:
+    title: ASCII Art Converter
+    doc_title: ASCII Art Converter · noodles97
+    description: Turn an image or a line of text into ASCII art in your browser. Korean text works as a banner too.
+    nav_label: Main menu
+    nav_apps: Apps
+    nav_blog: Blog
+    lead: Turn an image or a line of text into a picture made only of characters.
+    mode_image: Image
+    mode_text: Text
+    drop_title: Drop an image here or click to choose one
+    drop_sub: PNG · JPG · GIF · WebP · pasting from the clipboard (Ctrl+V) works too
+    sample_name: Sample image (sphere and grid)
+    sample_tag: SAMPLE
+    text_label: Text to convert
+    text_default: Hello ASCII
+    font: Font
+    font_sans: Sans (IBM Plex Sans KR)
+    font_display: Heavy display (Black Han Sans)
+    font_serif: Serif (system)
+    font_mono: Mono (IBM Plex Mono)
+    columns: Columns
+    charset: Character set
+    cs_standard: Standard (10 chars)
+    cs_dense: Dense (70 chars)
+    cs_blocks: Blocks (█▓▒░)
+    cs_dots: Dots (●◆○·)
+    cs_custom: Custom
+    custom_placeholder: "Darkest to lightest, e.g. @#+-. "
+    contrast: Contrast
+    invert: Invert (for pasting onto a light background)
+    color: Keep original colors (on screen only; copied text is plain)
+    output: Output
+    copy: Copy
+    out_size: Output font size
+    about_title: How to use it
+    about_lead: ASCII art is a picture drawn with nothing but characters. Upload an image or type some text, and this page maps brightness to character “weight” to build one.
+    about_image: "Image mode: drop a file, pick one, or paste from the clipboard. More columns give finer detail; fewer columns fit a chat window or a code comment."
+    about_text: "Text mode: turns any text, Korean or English, into a large banner. The browser rasterizes the text itself, so every character works without bundled font data."
+    about_charset: "Character set: the dense 70-character ramp suits photos; the block ramp (█▓▒░) suits logos and lettering. Type your own ramp from darkest to lightest to use a custom palette."
+    about_invert: "Invert: output is tuned for a dark background. Switch it on before pasting into a white document or messenger."
+    about_how: "How it works: the image is shrunk to a grid as wide as the column count, and each cell's luminance (0.2126R + 0.7152G + 0.0722B) is measured. A monospace cell is about twice as tall as it is wide, so the row count is halved to keep proportions, and the luminance picks one character from the ramp."
+    donate: Buy me a coffee
+  js:
+    copied: Copied to clipboard.
+    copy_fail: Clipboard access is blocked. The output is selected, so press Ctrl+C to copy.
+    stats: "{cols} × {rows} · {chars} chars"
+    load_fail: Could not read that image. Try another file.
+    clipboard: clipboard

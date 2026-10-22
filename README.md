@@ -15,3 +15,4 @@
 - **앱의 영어판**: 영어 앱 목록에는 `_data/apps.yml`에 `url_en`이 있는 앱만 나오고, 그때 `name_en`, `description_en`을 씁니다. 직구 계산기와 우사기 번역기처럼 한국어만 있는 앱은 `url_en`을 적지 않으면 영어 목록에서 빠집니다.
 - **메뉴·소개 문구 같은 공통 문자열**: `_data/i18n.yml`.
 - **이미지 변환기**: 한국어 `/image-converter/`, 영어 `/image-converter/en/`. 화면은 `_includes/image-converter.html` 한 벌이고, 모든 문구(화면 글과 스크립트 안내문)는 `_data/image_converter.yml`에 두 언어로 들어 있습니다. 문구를 고칠 때는 이 파일만 고치면 되고, 화면 구조를 바꿀 때는 템플릿을 고칩니다.
+- **아스키 아트 변환기**: 한국어 `/ascii-art/`, 영어 `/ascii-art/en/`. 이미지 변환기와 같은 구조로, 화면은 `_includes/ascii-art.html`, 문구는 `_data/ascii_art.yml`, 스크립트와 스타일은 `ascii-art/` 폴더에 있습니다.
